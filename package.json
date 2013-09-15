@@ -1,0 +1,50 @@
+{
+  "name": "kdc-plus",
+  "version": "0.0.1",
+  "description": "Koding Apps Compiler",
+  "author": "Lee Olayvar <leeolayvar@gmail.com>",
+  "constributors": [
+    {
+      "name": "Lee Olayvar",
+      "email": "leeolayvar@gmail.com"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "koding",
+    "app",
+    "compiler"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leeolayvar/kdc"
+  },
+  "bugs": {
+    "url": "https://github.com/leeolayvar/kdc/issues"
+  },
+  "scripts": {
+    "build": "./node_modules/grunt-cli/bin/grunt build",
+    "test": "./node_modules/grunt-cli/bin/grunt test",
+    "prepublish": "./node_modules/grunt-cli/bin/grunt prepublish"
+  },
+  "bin": {
+    "kdc": "./build/bin/kdc-plus.js",
+    "kdc-plus": "./build/bin/kdc-plus.js"
+  },
+  "main": "./build/index.js",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.9",
+    "grunt-contrib-coffee": "~0.7.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-mocha-cli": "~1.1.0",
+    "should": "~1.2.2",
+    "verbal-expressions": "~0.1.0",
+    "MD5": "~1.1.0"
+  },
+  "dependencies": {
+    "coffee-script": "~1.6.3",
+    "mocha": "~1.12.1"
+  }
+}

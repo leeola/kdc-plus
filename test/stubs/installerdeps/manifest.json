@@ -1,0 +1,17 @@
+{
+  "name": "Stub",
+  "path": ".",
+  "source": {
+    "blocks": {
+      "app": {
+        "files": [
+          "./main.coffee"
+         ]
+      }
+    }
+  },
+  "dependencies": {
+    "node": true
+  }
+}
+

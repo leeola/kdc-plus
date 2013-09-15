@@ -4,5 +4,5 @@
 
 
 
-exports._kdc  = require './_kdc'
-exports.kdc   = require './kdc'
+exports.bin           = require './bin'
+exports['kdc-plus']   = require './kdc-plus'

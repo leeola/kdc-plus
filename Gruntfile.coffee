@@ -12,6 +12,8 @@
 
 module.exports = (grunt) ->
   grunt.initConfig
+    pkg: grunt.file.readJSON 'package.json'
+
     clean:
       build: ['build']
 
@@ -23,6 +25,7 @@ module.exports = (grunt) ->
         ext     : '.js'
         src     : [
           'index.coffee'
+          'bin/**/*.coffee'
           'lib/**/*.coffee'
           'runtime/**/*.coffee'
           'test/**/*.coffee'
@@ -44,14 +47,27 @@ module.exports = (grunt) ->
         reporter: 'nyan'
         bail    : true
       all: ['build/test/*.js']
+
+    replace:
+      main:
+        options:
+          variables:
+            version: '<%= pkg.version %>'
+          prefix: '@@'
+        files: [
+          expand: true
+          src: 'build/bin/api.js'
+          dest: '.'
+        ]
         
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-mocha-cli'
+  grunt.loadNpmTasks 'grunt-replace'
 
-  grunt.registerTask 'build', ['clean', 'coffee', 'copy']
+  grunt.registerTask 'build', ['clean', 'coffee', 'copy', 'replace']
   grunt.registerTask 'test:nobuild', ['mochacli']
   grunt.registerTask 'test', ['build', 'test:nobuild']
   grunt.registerTask 'prepublish', ['test']

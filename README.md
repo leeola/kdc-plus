@@ -13,7 +13,7 @@ and runtime dependency resolution. For further explanation,
 To install, simply run the following command:
 
 ```
-npm install kdc-plus
+npm install -g kdc-plus
 ```
 
 Note that if you're installing on a default Koding VM, you will need to

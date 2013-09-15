@@ -27,7 +27,7 @@ check = (opts, callback=->) ->
   results = {}
 
   do next = (index=0) ->
-    if index >= checkFns.length return callback null, result, results
+    if index >= checkFns.length then return callback null, result, results
 
     [checkFn, checkName] = checkFns[index]
 

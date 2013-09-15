@@ -54,12 +54,8 @@ module.exports = (grunt) ->
           variables:
             version: '<%= pkg.version %>'
           prefix: '@@'
-        files: [
-          expand: true
-          src: 'build/bin/api.js'
-          dest: '.'
-        ]
-        
+        files: [src: 'build/bin/kdc-plus.js', dest: 'build/bin/kdc-plus.js']
+
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'

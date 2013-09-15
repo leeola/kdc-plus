@@ -40,7 +40,7 @@ see each of the following topics to explain the properties.
     "node": true,
     "bower": true
   },
-  "compiler": "commonjs"
+  "commonjs": false
 }
 ```
 
@@ -49,6 +49,11 @@ see each of the following topics to explain the properties.
 The `dependencies` object is a series of keys with `true`/`false` values. Each
 key represents a packaging system we support, and if the value is true we will
 install those dependencies.
+The dependencies themselvs are not defined in our manifest, but in the
+platform specific dependency file such as `package.json` or `bower.json`,
+our manifest simply tells `kdc-plus` that we want to check and run
+these installers.
+
 
 Remember, these are **runtime** dependencies. Whatever is in here, is required
 for users of our application to install. Generally, these will be serverside
@@ -59,10 +64,20 @@ dependencies such as web servers, etc.
 The `devDependencies` object is a series of keys with `true`/`false` values.
 Each key represents a packaging system we support, and if the value is
 true we install those devDependencies.
+The dependencies themselvs are not defined in our manifest, but in the
+platform specific dependency file such as `package.json` or `bower.json`,
+our manifest simply tells `kdc-plus` that we want to check and run
+these installers.
 
 Remember, these are **compile-time** dependencies. Whatever is in here, is
 required for our app to *compile*. Typically, this is used to include 3rd
 party code in our application's compiled `index.js` file.
+
+### Commonjs
+
+If `commonjs` is `false`, we simply concat the compiled CoffeeScript files
+*(or normal JavaScript)* into a single file. If it is `true`, then we use
+Browserify v2 to implement the standard commonjs require system.
 
 ## The Long Explanation
 

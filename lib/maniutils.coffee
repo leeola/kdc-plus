@@ -46,7 +46,7 @@ validate = (manifest, opts={}, callback=->) ->
 
   if not manifest.source?.blocks?.app?.files?
     failures.push "Failure: 'source.blocks.app.files' must be defined"
-  else manifest.source.blocks.app.files instanceof Array
+  else if manifest.source.blocks.app.files instanceof Array
     failures.push "Failure: 'source.blocks.app.files' must be an array"
 
   if failures.length is 0 then failures = null

@@ -12,4 +12,4 @@ transport = calculate()
 switch transport
   when 'node' then module.exports = require './node'
   when 'kdf'  then module.exports = require './kdf'
-  else then throw new Error "Unknown Transport #{transport}"
+  else throw new Error "Unknown Transport #{transport}"

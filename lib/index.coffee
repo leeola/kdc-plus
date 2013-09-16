@@ -4,4 +4,7 @@
 
 
 
-exports.cli = require './cli'
+
+exports.compilers   = require './compilers'
+exports.deps        = require './deps'
+exports.transports  = require './transports'

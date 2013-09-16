@@ -18,7 +18,12 @@ load = (appPath, opts={}, callback=->) ->
   opts.validate ?= false
   opts.name     ?= 'manifest.json'
 
-  fs.readFile path.join(appPath, opts.name), (err, data) ->
+  readPath          = path.join appPath, opts.name
+  readFileOpts  = encoding: 'utf-8'
+
+  fs.readFile readPath, readFileOpts, (err, data) ->
+    if err?.code is 'ENOENT'
+      return callback new Error "File #{readPath} does not exist"
     if err? then return callback err
 
     try

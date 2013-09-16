@@ -32,7 +32,9 @@ load = (appPath, opts={}, callback=->) ->
 
 
 
-
+# ## Validate
+#
+# Ensure that the passed in manifest object is valid to the KDC standards.
 validate = (manifest, opts={}, callback=->) ->
   if opts instanceof Function then [callback, opts] = [opts, {}]
 
@@ -41,12 +43,12 @@ validate = (manifest, opts={}, callback=->) ->
   failures  = []
   warnings  = []
 
-  if not manifest.name? then warning.push "Warning: Name is missing"
-  if not manifest.path? then warning.push "Warning: Path is missing"
+  if not manifest.name? then warnings.push "Warning: Name is missing"
+  if not manifest.path? then warnings.push "Warning: Path is missing"
 
   if not manifest.source?.blocks?.app?.files?
     failures.push "Failure: 'source.blocks.app.files' must be defined"
-  else if manifest.source.blocks.app.files instanceof Array
+  else if not (manifest.source.blocks.app.files instanceof Array)
     failures.push "Failure: 'source.blocks.app.files' must be an array"
 
   if failures.length is 0 then failures = null

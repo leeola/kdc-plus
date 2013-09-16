@@ -33,9 +33,14 @@ exec = exports.exec = (argv, log=console.error) ->
   loadOpts =
     validate: true
 
-  manitools.load appPath, loadOpts, (err, manifest) ->
+  maniutils.load appPath, loadOpts, (err, manifest, vfails, vwarns) ->
     if err?
       log "Error Loading Manifest: #{err.message}"
+      return process.exit 1
+
+    if vwarns? then log warning for warning in vwarns
+    if vfails?
+      log failure for failure in vfails
       return process.exit 1
 
     files = manifest.source.blocks.app.files

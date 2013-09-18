@@ -36,17 +36,20 @@ module.exports = (grunt) ->
         expand  : true
         cwd     : './'
         dest    : 'build'
-        src     : [
-          'bin/**/*.js'
-          'test/stubs/**/*.*'
-        ]
+        src     : ['bin/**/*.js']
+      stubs:
+        expand  : true
+        cwd     : './'
+        dest    : 'build'
+        src     : ['test/stubs/**/*.*']
 
     mochacli:
       options:
-        require : ['should']
+        require : ['should', 'coffee-script']
         reporter: 'nyan'
         bail    : true
-      all: ['build/test/index.js']
+      build   : ['build/test/index.js']
+      source  : ['test/index.coffee']
 
     replace:
       main:
@@ -63,9 +66,12 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-mocha-cli'
   grunt.loadNpmTasks 'grunt-replace'
 
-  grunt.registerTask 'build', ['clean', 'coffee', 'copy', 'replace']
-  grunt.registerTask 'test:nobuild', ['mochacli']
-  grunt.registerTask 'test', ['build', 'test:nobuild']
-  grunt.registerTask 'prepublish', ['test']
+
+  grunt.registerTask 'build', ['clean', 'coffee', 'copy:bin', 'replace']
+
+  grunt.registerTask 'test', ['copy:stubs', 'mochacli:source']
+  grunt.registerTask 'test:build', ['build', 'mochacli:build']
+
+  grunt.registerTask 'prepublish', ['test:build']
   grunt.registerTask 'default', ['prepublish']
 

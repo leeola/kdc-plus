@@ -29,6 +29,7 @@ module.exports = (grunt) ->
           'lib/**/*.coffee'
           'runtime/**/*.coffee'
           'test/**/*.coffee'
+          '!test/stubs/**/*.coffee'
         ]
 
     copy:

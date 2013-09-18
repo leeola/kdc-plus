@@ -46,7 +46,7 @@ module.exports = (grunt) ->
         require : ['should']
         reporter: 'nyan'
         bail    : true
-      all: ['build/test/*.js']
+      all: ['build/test/index.js']
 
     replace:
       main:

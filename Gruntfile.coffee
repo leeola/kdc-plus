@@ -68,7 +68,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-replace'
 
 
-  grunt.registerTask 'build', ['clean', 'coffee', 'copy:bin', 'replace']
+  grunt.registerTask 'build', ['clean', 'coffee', 'copy', 'replace']
 
   grunt.registerTask 'test', ['copy:stubs', 'mochacli:source']
   grunt.registerTask 'test:build', ['build', 'mochacli:build']

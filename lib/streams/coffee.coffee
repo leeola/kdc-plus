@@ -12,8 +12,11 @@ class CoffeeFile extends Readable
   constructor: (file, @opts={}) ->
     # A bit ugly, but by defining our own bin we can depend on whatever
     # version we want.
-    @opts.coffeeBin    ?= path.resolve path.join __dirname,
-      '..', '..', 'node_modules', 'coffee-script', 'bin', 'coffee'
+    @opts.coffeeBin    ?= path.resolve path.join(
+      require.resolve('coffee-script'),
+      '..', '..', '..',
+      'bin', 'coffee'
+    )
     super()
 
     @coffee = spawn @opts.coffeeBin, ['-p', file]

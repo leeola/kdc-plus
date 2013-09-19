@@ -6,9 +6,7 @@ should    = require 'should'
 
 
 
-
-stubsdir  = path.resolve path.join __dirname, '..', '..',
-  'build', 'test', 'stubs'
+stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
 
 
 

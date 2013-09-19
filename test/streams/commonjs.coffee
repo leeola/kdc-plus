@@ -1,5 +1,5 @@
 # 
-# # Browserify Stream Tests
+# # Commonjs Stream Tests
 #
 path      = require 'path'
 should    = require 'should'
@@ -9,9 +9,9 @@ should    = require 'should'
 stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
 
 
-describe 'Browserify()', ->
-  Browserify  = null
-  before -> {Browserify} = require '../../lib/streams/browserify'
+describe 'Commonjs()', ->
+  Commonjs  = null
+  before -> {Commonjs} = require '../../lib/streams/commonjs'
 
 
   describe 'with JavaScript files', ->

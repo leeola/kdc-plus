@@ -6,3 +6,4 @@
 
 
 exports.coffee  = require './coffee'
+exports.load    = require './load'

@@ -27,10 +27,14 @@ COFFEEBIN   = path.resolve path.join(
 # path into JavaScript.
 class CoffeeFile extends Readable
   constructor: (file, @opts={}) ->
-    @opts.coffeeBin    ?= COFFEEBIN
+    @opts.coffeeBin   ?= COFFEEBIN
+    @opts.bare        ?= false
     super()
 
-    @coffee = spawn @opts.coffeeBin, ['-p', file]
+    coffee_args = ['-p', file]
+    if @opts.bare then coffee_args.push '--bare'
+
+    @coffee = spawn @opts.coffeeBin, coffee_args
     @coffee.stdout.on 'end', => @push null
     @coffee.stdout.on 'data', (chunk) =>
       if not @push chunk
@@ -43,12 +47,17 @@ class CoffeeFile extends Readable
 # ## CoffeeTransform
 #
 # Our `CoffeeTransform` class extends `stream.Transform` to implement a
-# coffee compiling transformer.
+# streaming coffee compiling transformer.
 class CoffeeTransform extends Transform
   constructor: (opts={}) ->
     opts.coffeeBin    ?= COFFEEBIN
+    opts.bare         ?= false
     super()
-    @coffee = spawn opts.coffeeBin, ['-sc']
+
+    coffee_args = ['-sc']
+    if opts.bare then coffee_args.push '--bare'
+
+    @coffee = spawn opts.coffeeBin, coffee_args
     @coffee.stdout.on 'data', (chunk) => @push chunk
     @coffee.stdout.on 'end', => @push null
 

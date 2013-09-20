@@ -20,8 +20,7 @@ describe 'LoadStream()', ->
 
   it 'should load multiple files in a single stream', (done) ->
     d = ''
-    s = new LoadStream stub_files,
-      compileCoffee: false
+    s = new LoadStream stub_files
     s.on 'data', (chunk) -> d += chunk
     s.on 'end', ->
       d.should.equal expected
@@ -55,38 +54,45 @@ describe 'LoadStream()', ->
     """
 
 
-  it 'should compile coffee files', (done) ->
-    d = ''
-    s = new LoadStream stub_files,
-      compileCoffee: true
-    s.on 'data', (chunk) -> d += chunk
-    s.on 'end', ->
-      d.should.equal expected
-      return done()
 
-    expected = """
-    {
-      "name": "Stub",
-      "path": ".",
-      "source": {
-        "blocks": {
-          "app": {
-            "files": [
-              "./main.coffee"
-             ]
-          }
-        }
-      }
-    }
+  describe '#transforms()', ->
+    CoffeeTransform = null
+    before -> {CoffeeTransform} = require '../../lib/streams/coffee'
 
-    (function() {
+    it 'should pipe incoming files to the given transform', (done) ->
+      d = ''
+      s = new LoadStream [path.join stubsdir, 'nodeps', 'main.coffee']
+      s.transform -> new CoffeeTransform()
+      s.on 'data', (chunk) -> d += chunk
+      s.on 'end', ->
+        #Ignore the annoying as hell "compiled by" message
+        d = d.split('\n')[1...].join('\n')
+        d.should.equal expected
+        return done()
+
+      expected = """
       (function() {
-        return new KDNotificationView({
-          title: 'Stub'
-        });
-      })();
+        (function() {
+          return new KDNotificationView({
+            title: 'Stub'
+          });
+        })();
 
-    }).call(this);
-    
-    """
+      }).call(this);
+      
+      """
 
+    it 'should pass filename and extension to the callback', (done) ->
+      d = []
+      s = new LoadStream stub_files
+      s.transform (file, ext) ->
+        d.push [file, ext]
+        return null
+      s.on 'data', -> # We don't care about the data, but subscribing to it
+                      # causes the stream to free-flow
+      s.on 'end', ->
+        d[1][0].should.equal stub_files[0]
+        d[1][1].should.equal path.extname stub_files[0]
+        d[0][0].should.equal stub_files[1]
+        d[0][1].should.equal path.extname stub_files[1]
+        return done()

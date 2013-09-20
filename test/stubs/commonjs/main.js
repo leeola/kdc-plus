@@ -1,2 +1,2 @@
-var required = require './required'
+var required = require('./required')
 required.notify()

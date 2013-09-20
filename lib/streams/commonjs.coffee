@@ -18,9 +18,11 @@ browserify        = require 'browserify'
 class Commonjs extends Readable
   constructor: (file, opts={}) ->
     opts.transforms   ?= []
+    opts.extensions   ?= []
     super()
-    @_browserify  = browserify()
-    @_browserify.add file
+    @_browserify  = browserify
+      entries: [file]
+      extensions: opts.extensions
 
     # Add our transforms
     @_browserify.transform trfn for trfn in opts.transforms

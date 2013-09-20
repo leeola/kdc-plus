@@ -9,18 +9,18 @@ should    = require 'should'
 stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
 
 
-describe 'LoadStream()', ->
+describe 'LoadMulti()', ->
   stub_files    = [
     path.join stubsdir, 'nodeps', 'main.coffee'
     path.join stubsdir, 'nodeps', 'manifest.json'
   ]
-  LoadStream    = null
-  before -> {LoadStream} = require '../../lib/streams/load'
+  LoadMulti    = null
+  before -> {LoadMulti} = require '../../lib/streams/load'
 
 
   it 'should load multiple files in a single stream', (done) ->
     d = ''
-    s = new LoadStream stub_files
+    s = new LoadMulti stub_files
     s.on 'data', (chunk) -> d += chunk
     s.on 'end', ->
       d.should.equal expected
@@ -61,7 +61,7 @@ describe 'LoadStream()', ->
 
     it 'should pipe incoming files to the given transform', (done) ->
       d = ''
-      s = new LoadStream [path.join stubsdir, 'nodeps', 'main.coffee']
+      s = new LoadMulti [path.join stubsdir, 'nodeps', 'main.coffee']
       s.transform -> new CoffeeTransform()
       s.on 'data', (chunk) -> d += chunk
       s.on 'end', ->
@@ -84,7 +84,8 @@ describe 'LoadStream()', ->
 
     it 'should pass filename and extension to the callback', (done) ->
       d = []
-      s = new LoadStream stub_files
+      s = new LoadMulti stub_files
+
       s.transform (file, ext) ->
         d.push [file, ext]
         return null

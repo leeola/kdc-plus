@@ -11,7 +11,7 @@ path            = require 'path'
 
 
 
-class LoadStream extends Readable
+class LoadMulti extends Readable
   constructor: (files=[], @opts={}) ->
     @files                = files[..] # Copy
     # A list of functions that we will call with each file, offering the
@@ -65,4 +65,4 @@ class LoadStream extends Readable
 
 
 
-exports.LoadStream = LoadStream
+exports.LoadMulti = LoadMulti

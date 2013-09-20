@@ -47,15 +47,19 @@ class Commonjs extends Readable
   # provide the file extension. Basically, i want the same interface fir
   # both Streams.
   transform: (transformProvider) -> @_browserify.transform (file) ->
-    console.log "Common transform", file
     ext = path.extname file
-
     transform = transformProvider file, ext
     if not transform? then return new PassTransform()
     transform
 
 
 # ## PassTransform
+#
+# Our PassTransform is a workaround to the fact that i can't figure out how
+# to make Browserify let me choose *not* to transform that specific stream.
+# Browserify seemingly requires all transforms return streams, so this
+# is here to make a passthrough stream for when callers opt out of returning
+# a stream for that specific transform-file.
 class PassTransform extends Transform
   constructor: -> super
   _transform: (chunk) -> @push chunk

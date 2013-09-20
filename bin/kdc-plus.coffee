@@ -3,10 +3,12 @@
 #
 # Our main bin code, called when executing the `kdc-plus` command.
 #
-fs          = require 'fs'
-path        = require 'path'
-compilers   = require '../lib/compilers'
-maniutils   = require '../lib/maniutils'
+fs                = require 'fs'
+path              = require 'path'
+{CoffeeTransform} = require '../lib/streams/coffee'
+{Commojs}         = require '../lib/streams/commonjs'
+{LoadMulti}       = require '../lib/streams/load'
+maniutils         = require '../lib/maniutils'
 
 
 
@@ -18,6 +20,9 @@ exec = exports.exec = (argv, log=console.error) ->
   opts.version '@@version'
   opts.usage '[options] [kdapp directory]'
   opts.parse argv
+
+  #Hack for now
+  opts.coffee ?= true
 
   [appPath, unhandledArgs] = opts.args
 
@@ -43,19 +48,35 @@ exec = exports.exec = (argv, log=console.error) ->
       log failure for failure in vfails
       return process.exit 1
 
+    cwd = process.cwd()
     files = manifest.source.blocks.app.files
+    files[i] = path.join(appPath, file) for file,i in files
 
-    compiler = compilers[manifest.compiler]
+    if opts.commonjs
+      cjsopts = extensions: []
+      cjsopts.extensions.push '.coffee' if opts.coffee
+      loader    = new Commonjs files, cjsopts
+    else
+      loader    = new LoadMulti files
 
-    compiler files, (err, out) ->
-      if err?
-        log "Error Compiling KDApp: #{err.message}"
-        return process.exit 1
+    if opts.coffee
+      loader.transform (file, ext) ->
+        log 'Yooooooooooooo'
+        if ext is '.coffee' then return new CoffeeTransform()
 
-      fs.writeFile path.join(appPath, 'indexj.js'), out, (err) ->
-        if err?
-          log "Error Saving Compiled KDApp: #{err.message}"
-          return process.exit 1
+    loader.on 'error', (err) ->
+      log "Error Compiling KDApp: #{err.message}"
+      process.exit 1
+
+    destination = fs.createWriteStream path.join appPath, 'index.js'
+    destination.on 'error', (err) ->
+      log "Error Saving Compiled KDApp: #{err.message}"
+      process.exit 1
+
+    destination.on 'end', ->
+      log "KDApp Compiled Successfully!"
+
+    loader.pipe destination
 
 
 

@@ -21,7 +21,7 @@ class LoadStream extends Readable
     super()
 
   __readNext: =>
-    file = @files.pop()
+    file = @files.shift()
     if not file? then return @push null
     ext = path.extname file
 

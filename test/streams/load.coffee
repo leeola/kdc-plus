@@ -27,6 +27,15 @@ describe 'LoadStream()', ->
       return done()
 
     expected = """
+    # 
+    # # Test Stub
+    #
+
+
+
+    do ->
+      new KDNotificationView
+        title: 'Stub'
     {
       "name": "Stub",
       "path": ".",
@@ -40,16 +49,7 @@ describe 'LoadStream()', ->
         }
       }
     }
-
-    # 
-    # # Test Stub
-    #
-
-
-
-    do ->
-      new KDNotificationView
-        title: 'Stub'
+    
     
     """
 
@@ -91,8 +91,8 @@ describe 'LoadStream()', ->
       s.on 'data', -> # We don't care about the data, but subscribing to it
                       # causes the stream to free-flow
       s.on 'end', ->
-        d[1][0].should.equal stub_files[0]
-        d[1][1].should.equal path.extname stub_files[0]
-        d[0][0].should.equal stub_files[1]
-        d[0][1].should.equal path.extname stub_files[1]
+        d[0][0].should.equal stub_files[0]
+        d[0][1].should.equal path.extname stub_files[0]
+        d[1][0].should.equal stub_files[1]
+        d[1][1].should.equal path.extname stub_files[1]
         return done()

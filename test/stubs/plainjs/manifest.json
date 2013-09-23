@@ -1,0 +1,14 @@
+{
+  "name": "Stub",
+  "path": ".",
+  "source": {
+    "blocks": {
+      "app": {
+        "files": [
+          "./main.js"
+         ]
+      }
+    }
+  }
+}
+

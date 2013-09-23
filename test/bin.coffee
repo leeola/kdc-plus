@@ -60,7 +60,8 @@ binGen = (binName, opts={}) ->
 
 
 describe 'bin/kdc-plus', ->
-  bin = null
+  bin       = null
+  stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
   before -> bin = binGen 'kdc-plus'
 
   it 'should log to stderr not stdout', (done) ->
@@ -83,7 +84,7 @@ describe 'bin/kdc-plus', ->
       done()
 
   it 'should fail with additional arguments', (done) ->
-    stub = path.join __dirname, 'stubs', 'nodeps'
+    stub = path.join stubsdir, 'nodeps'
     bin [stub, 'bad arg'], (err, stdout, stderr) ->
       should.exist err
       stdout.should.equal ''
@@ -92,7 +93,7 @@ describe 'bin/kdc-plus', ->
 
 
   it 'should compile a kdapp', (done) ->
-    stub = path.join __dirname, 'stubs', 'nodeps'
+    stub = path.join stubsdir, 'nodeps'
     bin [stub], (err, stdout, stderr) ->
       should.not.exist err
       stdout.should.equal ''
@@ -100,7 +101,7 @@ describe 'bin/kdc-plus', ->
       done()
 
   it 'should support plain javascript kdapps', (done) ->
-    stub = path.join __dirname, 'stubs', 'plainjs'
+    stub = path.join stubsdir, 'plainjs'
     bin [stub], (err, stdout, stderr) ->
       should.not.exist err
       stdout.should.equal ''
@@ -108,7 +109,7 @@ describe 'bin/kdc-plus', ->
       done()
 
   it 'should support commonjs kdapps', (done) ->
-    stub = path.join __dirname, 'stubs', 'commonjs'
+    stub = path.join stubsdir, 'commonjs'
     bin [stub], (err, stdout, stderr) ->
       should.not.exist err
       stdout.should.equal ''

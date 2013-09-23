@@ -90,9 +90,28 @@ describe 'bin/kdc-plus', ->
       stderr.should.match /unknown/i
       done()
 
-  it 'should compile a kdapp'
 
-  it 'should support coffee kdapps'
+  it 'should compile a kdapp', (done) ->
+    stub = path.join __dirname, 'stubs', 'nodeps'
+    bin [stub], (err, stdout, stderr) ->
+      should.not.exist err
+      stdout.should.equal ''
+      stderr.should.match /success/i
+      done()
 
-  it 'should support commonjs kdapps'
+  it 'should support plain javascript kdapps', (done) ->
+    stub = path.join __dirname, 'stubs', 'plainjs'
+    bin [stub], (err, stdout, stderr) ->
+      should.not.exist err
+      stdout.should.equal ''
+      stderr.should.match /success/i
+      done()
+
+  it 'should support commonjs kdapps', (done) ->
+    stub = path.join __dirname, 'stubs', 'commonjs'
+    bin [stub], (err, stdout, stderr) ->
+      should.not.exist err
+      stdout.should.equal ''
+      stderr.should.match /success/i
+      done()
 

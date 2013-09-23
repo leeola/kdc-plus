@@ -17,10 +17,16 @@ should      = require 'should'
 # with the bin file as a closure. Just a little utility function for our tests.
 binGen = (binName, opts={}) ->
   opts.addBinPath       ?= true
+  opts.autoExtension    ?= true
   opts.includeBinExec   ?= true
 
   # Our internal args list is prepended to every user args list.
   _args=[]
+
+  # Add the extension of this file to the binName, if binName is missing an
+  # extension.
+  if opts.autoExtension and not path.extname(binName)?
+    binName += path.extname __filename
   
   # If our bin is just the name, we add the proper bin path.
   if opts.addBinPath and binName.indexOf('/') < 0
@@ -55,7 +61,7 @@ binGen = (binName, opts={}) ->
 
 describe 'bin/kdc-plus', ->
   bin = null
-  before -> bin = binGen 'kdc-plus.coffee'
+  before -> bin = binGen 'kdc-plus'
 
   it 'should log to stderr not stdout', (done) ->
     bin ['-h'], (err, stdout, stderr) ->

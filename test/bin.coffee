@@ -25,7 +25,7 @@ binGen = (binName, opts={}) ->
 
   # Add the extension of this file to the binName, if binName is missing an
   # extension.
-  if opts.autoExtension and not path.extname(binName)?
+  if opts.autoExtension and path.extname(binName) is ''
     binName += path.extname __filename
   
   # If our bin is just the name, we add the proper bin path.

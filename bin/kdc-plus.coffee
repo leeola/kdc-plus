@@ -61,7 +61,6 @@ exec = exports.exec = (argv, log=console.error) ->
 
     if opts.coffee
       loader.transform (file, ext) ->
-        log 'Yooooooooooooo'
         if ext is '.coffee' then return new CoffeeTransform()
 
     loader.on 'error', (err) ->

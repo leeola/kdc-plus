@@ -7,5 +7,6 @@
 
 
 
+exports.bin         = require './bin'
 exports.streams     = require './streams'
 exports.maniutils   = require './maniutils'

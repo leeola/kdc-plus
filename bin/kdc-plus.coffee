@@ -18,7 +18,7 @@ exec = exports.exec = (argv, log=console.error) ->
 
   # Define our opts
   opts.version '@@version'
-  opts.usage '[options] [kdapp directory]'
+  opts.usage '[options] <kdapp directory>'
   opts.parse argv
 
   #Hack for now

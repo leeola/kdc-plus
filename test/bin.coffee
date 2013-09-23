@@ -75,3 +75,13 @@ describe 'bin/kdc-plus', ->
       stderr.should.match /usage.*options/i
       done()
 
+  it 'should require an appPath'
+
+  it 'should fail with additional arguments'
+
+  it 'should compile a kdapp'
+
+  it 'should support coffee kdapps'
+
+  it 'should support commonjs kdapps'
+

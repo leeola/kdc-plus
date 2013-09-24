@@ -1,0 +1,13 @@
+{
+  "name": "stub",
+  "path": ".",
+  "source": {
+    "blocks": {
+      "app": {
+        "files": [
+          "./main.coffee"
+        ]
+      }
+    }
+  }
+}

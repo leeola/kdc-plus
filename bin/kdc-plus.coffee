@@ -72,7 +72,7 @@ exec = exports.exec = (argv, log=console.error) ->
       log "Error Saving Compiled KDApp: #{err.message}"
       process.exit 1
 
-    destination.on 'end', ->
+    destination.on 'finish', ->
       log "KDApp Compiled Successfully!"
 
     loader.pipe destination

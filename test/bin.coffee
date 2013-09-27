@@ -94,7 +94,7 @@ describe 'bin/kdc-plus', ->
 
   it 'should compile a kdapp', (done) ->
     stub = path.join stubsdir, 'nodeps'
-    bin [stub], (err, stdout, stderr) ->
+    bin [stub, '-p'], (err, stdout, stderr) ->
       should.not.exist err
       stdout.should.equal ''
       stderr.should.match /success/i
@@ -102,7 +102,7 @@ describe 'bin/kdc-plus', ->
 
   it 'should support plain javascript kdapps', (done) ->
     stub = path.join stubsdir, 'plainjs'
-    bin [stub], (err, stdout, stderr) ->
+    bin [stub, '-p'], (err, stdout, stderr) ->
       should.not.exist err
       stdout.should.equal ''
       stderr.should.match /success/i
@@ -110,9 +110,9 @@ describe 'bin/kdc-plus', ->
 
   it 'should support commonjs kdapps', (done) ->
     stub = path.join stubsdir, 'commonjs'
-    bin [stub], (err, stdout, stderr) ->
+    bin [stub, '-p'], (err, stdout, stderr) ->
       should.not.exist err
       stdout.should.equal ''
       stderr.should.match /success/i
-      done()
+
 

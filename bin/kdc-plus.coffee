@@ -93,26 +93,24 @@ exec = exports.exec = (argv, log=console.error) ->
       loader.transform (file, ext) ->
         if ext is '.coffee' then return new CoffeeTransform()
 
+    # Now we finally pipe the output out of our program. We either pipe it to
+    # a file, or STDOUT (if defined)
+    if opts.pipe
+      outer   = process.stdout
+      loader.on 'end', -> log "KDApp Compiled Successfully!"
+    else
+      outer   = fs.createWriteStream path.join appPath, opts.file
+      outer.on 'finish', -> log "KDApp Compiled Successfully!"
+
     loader.on 'error', (err) ->
       log "Error Compiling KDApp: #{err.message}"
       process.exit 1
 
-
-    # Now we finally pipe the output out of our program. We either pipe it to
-    # a file, or STDOUT (if defined)
-    if opts.pipe
-      out     = process.stdout
-    else
-      out     = fs.createWriteStream path.join appPath, opts.file
-
-    out.on 'error', (err) ->
+    outer.on 'error', (err) ->
       log "Error Saving Compiled KDApp: #{err.message}"
       process.exit 1
 
-    out.on 'finish', ->
-      log "KDApp Compiled Successfully!"
-
-    loader.pipe out
+    loader.pipe outer
 
 
 

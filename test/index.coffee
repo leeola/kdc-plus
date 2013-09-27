@@ -7,6 +7,7 @@
 
 
 
+exports.deps        = require './deps'
 exports.streams     = require './streams'
 exports.maniutils   = require './maniutils'
 

@@ -1,6 +1,6 @@
 {
   "name": "kdc-plus",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Koding Apps Compiler",
   "author": "Lee Olayvar <leeolayvar@gmail.com>",
   "constributors": [
@@ -17,10 +17,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/leeolayvar/kdc"
+    "url": "https://github.com/leeolayvar/kdc-plus"
   },
   "bugs": {
-    "url": "https://github.com/leeolayvar/kdc/issues"
+    "url": "https://github.com/leeolayvar/kdc-plus/issues"
   },
   "scripts": {
     "build": "./node_modules/grunt-cli/bin/grunt build",

@@ -20,7 +20,7 @@ describe 'CoffeeFile()', ->
     s = new CoffeeFile stub
     s.on 'data', (chunk) -> d += chunk
     s.on 'end', ->
-      d.should.match /required to pass/
+      d.should.match /\/\* required to pass/
       return done()
 
 

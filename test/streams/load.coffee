@@ -11,8 +11,8 @@ stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
 
 describe 'LoadMulti()', ->
   stub_files    = [
-    path.join stubsdir, 'nodeps', 'main.coffee'
-    path.join stubsdir, 'nodeps', 'manifest.json'
+    path.join stubsdir, 'commonjs', 'main.js'
+    path.join stubsdir, 'commonjs', 'required.js'
   ]
   LoadMulti    = null
   before -> {LoadMulti} = require '../../lib/streams/load'
@@ -23,36 +23,9 @@ describe 'LoadMulti()', ->
     s = new LoadMulti stub_files
     s.on 'data', (chunk) -> d += chunk
     s.on 'end', ->
-      d.should.equal expected
-      return done()
-
-    expected = """
-    # 
-    # # Test Stub
-    #
-
-
-
-    do ->
-      new KDNotificationView
-        title: 'Stub'
-    {
-      "name": "Stub",
-      "path": ".",
-      "source": {
-        "blocks": {
-          "app": {
-            "files": [
-              "./main.coffee"
-             ]
-          }
-        }
-      }
-    }
-    
-    
-    """
-
+      d.match(/required to pass/g).length.should.eql 2,
+        'The required matches werre not all found'
+      done()
 
 
   describe '#transforms()', ->

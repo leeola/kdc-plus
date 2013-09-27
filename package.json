@@ -28,8 +28,8 @@
     "prepublish": "./node_modules/grunt-cli/bin/grunt prepublish"
   },
   "bin": {
-    "kdc": "./build/bin/kdc-plus.js",
-    "kdc-plus": "./build/bin/kdc-plus.js"
+    "kdc": "./build/bin/_kdc-plus.js",
+    "kdc-plus": "./build/bin/_kdc-plus.js"
   },
   "main": "./build/index.js",
   "devDependencies": {

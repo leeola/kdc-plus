@@ -1,9 +1,11 @@
 # 
 # # Test Stub
 #
+### required to pass ###
+
 
 
 
 do ->
   new KDNotificationView
-    title: 'Stub'
+    title: 'stub'

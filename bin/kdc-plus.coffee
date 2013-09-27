@@ -6,7 +6,7 @@
 fs                = require 'fs'
 path              = require 'path'
 {CoffeeTransform} = require '../lib/streams/coffee'
-{Commojs}         = require '../lib/streams/commonjs'
+{Commonjs}        = require '../lib/streams/commonjs'
 {LoadMulti}       = require '../lib/streams/load'
 maniutils         = require '../lib/maniutils'
 

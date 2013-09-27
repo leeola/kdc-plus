@@ -110,9 +110,13 @@ describe 'bin/kdc-plus', ->
 
   it 'should support commonjs kdapps', (done) ->
     stub = path.join stubsdir, 'commonjs'
-    bin [stub, '-p'], (err, stdout, stderr) ->
+    bin [stub, '-p', '--commonjs'], (err, stdout, stderr) ->
       should.not.exist err
-      stdout.should.equal ''
+      stdout_pattern = /required to pass/g
+      stdout.should.match stdout_pattern
+      stdout.match(stdout_pattern).length.should.eql 2,
+        'stdout is not matching as many times as expected'
       stderr.should.match /success/i
+      done()
 
 

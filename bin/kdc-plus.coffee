@@ -19,10 +19,11 @@ exec = exports.exec = (argv, log=console.error) ->
   # Define our opts
   opts.version '@@version'
   opts.usage '[options] <kdapp directory>'
+  opts.option '-p, --pipe', 'Pipe to STDOUT instead of to a file'
+  opts.option '-f, --file <file>', 'Choose the output file'
+  opts.option '--no-coffee', 'No coffee-script support'
+  opts.option '-c, --commonjs', 'Support commonjs'
   opts.parse argv
-
-  #Hack for now
-  opts.coffee ?= true
 
   [appPath, unhandledArgs] = opts.args
 
@@ -42,6 +43,35 @@ exec = exports.exec = (argv, log=console.error) ->
     if err?
       log "Error Loading Manifest: #{err.message}"
       return process.exit 1
+
+    # ## CLI & Manifest Defaults
+    # Now that we have a manifest loaded, assign our defaults, letting the
+    # CLI opts override everything.
+
+    # If they declared pipe and file, warn that file is ignored.
+    if opts.file? and opts.pipe
+      log 'Warning: --pipe and --file are both defined, file will be ignored.'
+
+    # Since pipe desn't make sense as a manifest option, lets warn it.
+    if manifest.pipe is true
+      log 'Warning: "pipe" is not supported in the manifest'
+
+    if opts.file? or manifest.file?
+      opts.file = opts.file ? manifest.file
+    else
+      opts.file = 'index.js'
+
+    if opts.commonjs? or manifest.commonjs?
+      opts.commonjs = opts.commonjs ? manifest.commonjs
+    else
+      opts.commonjs = false
+
+    # Remember, coffee defaults to on. So we allow the option of turning it off
+    if opts.coffee is false
+      opts.coffee = opts.coffee
+    else if manifest.coffee is false
+      opts.coffee = manifest.coffee
+
 
     if vwarns? then log warning for warning in vwarns
     if vfails?
@@ -67,15 +97,22 @@ exec = exports.exec = (argv, log=console.error) ->
       log "Error Compiling KDApp: #{err.message}"
       process.exit 1
 
-    destination = fs.createWriteStream path.join appPath, 'index.js'
-    destination.on 'error', (err) ->
+
+    # Now we finally pipe the output out of our program. We either pipe it to
+    # a file, or STDOUT (if defined)
+    if opts.pipe
+      out     = process.stdout
+    else
+      out     = fs.createWriteStream path.join appPath, opts.file
+
+    out.on 'error', (err) ->
       log "Error Saving Compiled KDApp: #{err.message}"
       process.exit 1
 
-    destination.on 'finish', ->
+    out.on 'finish', ->
       log "KDApp Compiled Successfully!"
 
-    loader.pipe destination
+    loader.pipe out
 
 
 

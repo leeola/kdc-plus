@@ -96,7 +96,7 @@ describe 'bin/kdc-plus', ->
     stub = path.join stubsdir, 'nodeps'
     bin [stub, '-p'], (err, stdout, stderr) ->
       should.not.exist err
-      stdout.should.match /required to pass/i
+      stdout.should.match /required to pass/
       stderr.should.match /success/i
       done()
 
@@ -104,7 +104,7 @@ describe 'bin/kdc-plus', ->
     stub = path.join stubsdir, 'plainjs'
     bin [stub, '-p'], (err, stdout, stderr) ->
       should.not.exist err
-      stdout.should.equal ''
+      stdout.should.match /required to pass/
       stderr.should.match /success/i
       done()
 

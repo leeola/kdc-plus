@@ -5,8 +5,8 @@
 #
 path              = require 'path'
 {
+  PassThrough
   Readable
-  Transform
 }                 = require 'stream'
 browserify        = require 'browserify'
 {CoffeeTransform} = require './coffee'
@@ -49,20 +49,8 @@ class Commonjs extends Readable
   transform: (transformProvider) -> @_browserify.transform (file) ->
     ext = path.extname file
     transform = transformProvider file, ext
-    if not transform? then return new PassTransform()
+    if not transform? then return new PassThrough()
     transform
-
-
-# ## PassTransform
-#
-# Our PassTransform is a workaround to the fact that i can't figure out how
-# to make Browserify let me choose *not* to transform that specific stream.
-# Browserify seemingly requires all transforms return streams, so this
-# is here to make a passthrough stream for when callers opt out of returning
-# a stream for that specific transform-file.
-class PassTransform extends Transform
-  constructor: -> super
-  _transform: (chunk) -> @push chunk
 
 
 # ## coffeeifyTransform

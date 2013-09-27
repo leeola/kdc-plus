@@ -23,23 +23,11 @@ describe 'Commonjs()', ->
     s = new Commonjs stub
     s.on 'data', (chunk) -> d += chunk
     s.on 'end', ->
-      # The first line is a huge singleline require statement, so lets cut
-      # that off for our sanity.
-      d = d.split('\n')[1...].join('\n')
-
-      d.should.equal expected
-      return done()
-    expected = """
-    var required = require('./required')
-    required.notify()
-
-    },{"./required":2}],2:[function(require,module,exports){
-    exports.notify = function() {
-      new KDNotificationView({title: 'stub'})
-    }
-
-    },{}]},{},[1])
-    ;"""
+      r = /required to pass/g
+      d.should.match r
+      d.match(r).length.should.eql 2,
+        'pattern is not matching as many times as expected'
+      done()
 
 
   describe 'with a CoffeeScript Transform', ->

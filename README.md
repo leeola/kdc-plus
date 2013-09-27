@@ -10,14 +10,12 @@ and runtime dependency resolution. For further explanation,
 
 ## Installation
 
-To install, simply run the following command:
+To install, simply run the following two commands *(you may need `sudo`)*:
 
 ```
+npm uninstall -g kdc
 npm install -g kdc-plus
 ```
-
-Note that if you're installing on a default Koding VM, you will need to
-use `sudo` with that command.
 
 ## Usage
 
@@ -79,50 +77,7 @@ If `commonjs` is `false`, we simply concat the compiled CoffeeScript files
 *(or normal JavaScript)* into a single file. If it is `true`, then we use
 Browserify v2 to implement the standard commonjs require system.
 
-## The Long Explanation
+## I still don't get it
 
-Most KDApps at the time of this writing have no external dependencies. This
-is okay for the basic stuff, but this severely limits the potential of the
-applications *(in my modest opinion)*.
-
-If you look at any popular language with a healthy community, you see a strong
-packaging system behind this community. Allowing them to share libraries
-and functionality. I'm not suggesting we build our own packaging system,
-i don't see the need. I *am* suggesting that we create a system by which we
-can include these packages as dependencies of our applications.
-
-### So, how will this work?
-
-To understand the implementation, we must understand the constraints that
-KDApps put on us.
-
-When a KDApp is "installed" from the main App List it comes with two files.
-This process is simply a copying of the two files, a compiled
-JavaScript file, and a Manifest file. Users then run it, and that's it, any
-custom serverside code or processes that we may depend on are not installed.
-To install serverside dependencies that our runtime depends on,
-we have to run code during the apps execution. This installer code
-has to be *included* in this application. These are considered runtime
-dependencies, or `dependencies` in the manifest.
-
-For dependencies that are included *in* the source of the application *(that
-JavaScript file)*, or that a compiler hook may depend on,
-we need to include those at the time of compilation. We will consider
-these compile-time dependencies, or `devDependencies` in the manifest. 
-
-### Compile-Time Dependencies
-
-Compile-time dependencies will be resolved by kdc-plus, before compiling.
-By resolving it before compiling, we can then compile like normal and any
-files from any npm/bower/etc libraries can be included in the manifest and
-compilation like normal. No failed compilations due to missing npm modules.
-
-### Runtime Dependencies
-
-Runtime dependencies are a bit more complex. Because these can't be baked
-with the application *(for multiple reasons)*, we must install them on the
-user machine at the time of running the application. This means that we'll
-have to inject this installer code into the compiled js file. It will run
-in the background of the app launching and in a configurable way, and will
-prompt the user informing that the KDApp has VM-side dependencies that
-are being installed.
+If you're looking for additional explanation of what this project is, why it
+exists, and what goals it has, please see [the ABOUT page](ABOUT.md).

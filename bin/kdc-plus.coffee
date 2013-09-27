@@ -18,7 +18,7 @@ exec = exports.exec = (argv, log=console.error) ->
 
   # Define our opts
   opts.version '@@version'
-  opts.usage '[options] <kdapp directory>'
+  opts.usage '[options] [kdapp directory]'
   opts.option '-p, --pipe', 'Pipe to STDOUT instead of to a file'
   opts.option '-f, --file <file>', 'Choose the output file'
   opts.option '--no-coffee', 'No coffee-script support'
@@ -27,9 +27,7 @@ exec = exports.exec = (argv, log=console.error) ->
 
   [appPath, unhandledArgs] = opts.args
 
-  if not appPath?
-    log 'Invalid KDApp Path'
-    return process.exit 1
+  if not appPath? then appPath = process.cwd()
 
   if unhandledArgs?
     log "Unknown Arguments: #{JSON.stringify unhandledArgs}"

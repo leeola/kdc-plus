@@ -76,13 +76,6 @@ describe 'bin/kdc-plus', ->
       stderr.should.match /usage.*options/i
       done()
 
-  it 'should require an appPath', (done) ->
-    bin ['--'], (err, stdout, stderr) ->
-      should.exist err
-      stdout.should.equal ''
-      stderr.should.match /invalid.*path/i
-      done()
-
   it 'should fail with additional arguments', (done) ->
     stub = path.join stubsdir, 'nodeps'
     bin [stub, 'bad arg'], (err, stdout, stderr) ->

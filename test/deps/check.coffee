@@ -1,39 +1,31 @@
 # 
 # # Check Deps Tests
 #
+path          = require 'path'
 should        = require 'should'
-{
-  check
-  checkNode
-}             = require '../lib/checkdeps'
 
 
 
-describe 'check()', ->
 
+stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
+
+
+
+describe 'checkDev()', ->
+
+describe 'checkProd()', ->
 
 describe 'checkNodeDev()', ->
-  describe 'with stub/nodeps', ->
+  checkNodeDev  = null
+  before -> {checkNodeDev} = require '../../lib/deps/check'
+
+  describe 'on stub/nodeps', ->
     it 'should callback false', (done) ->
-      checkNode
-        devDeps : true
-        prodDeps: true
+      checkNodeDev
+        dir: path.join stubsdir, 'nodeps'
         (err, result, list) ->
           should.not.exist err
           result.should.equal false
           list.should.equal []
-
-
-  describe 'with stub/devdeps', ->
-    it 'should callback true', ->
-      checkNode
-        devDeps : true
-        prodDeps: true
-        (err, result, list) ->
-          should.not.exist err
-          result.should.equal true
-          # This test is a bit unique, because
-          list.should.equal []
-
 
 

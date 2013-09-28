@@ -29,4 +29,24 @@ describe 'outdatedNodeDev()', ->
                                     # docs for reference.
           done()
 
+  describe 'on stub/devdeps', ->
+    it 'should callback true', (done) ->
+      outdatedNodeDev path.join(stubsdir, 'devdeps'),
+        (err, result, list) ->
+          should.not.exist err
+          result.should.equal true
+          list.should.have.length 0 # List should normally be > 0, see fn
+                                    # docs for reference.
+          done()
+
+  describe 'on stub/installdeps', ->
+    it 'should callback true', (done) ->
+      outdatedNodeDev path.join(stubsdir, 'installdeps'),
+        (err, result, list) ->
+          should.not.exist err
+          result.should.equal true
+          list.should.have.length 0 # List should normally be > 0, see fn
+                                    # docs for reference.
+          done()
+
 

@@ -18,9 +18,13 @@ _installNode = (dir, opts={}, callback=->) ->
 
   transport = opts.transport
 
+  # npm requires the cwd be the location of our installation directory.
+  transportOpts =
+    cwd: dir
+
   args = opts.command.split ' '
   args.push dir
-  transport args, (err, stdout, stderr) ->
+  transport args, transportOpts, (err, stdout, stderr) ->
     if err?
       switch err.code
         when 34 then callback new Error 'package.json not found'

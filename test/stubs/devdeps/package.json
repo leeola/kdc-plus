@@ -2,7 +2,7 @@
   "private": true,
   "name": "devdep-stub",
   "version": "0.0.0",
-  "scripts": {
-    "install": "npm install ./dep"
+  "devDependencies": {
+    "example": ""
   }
 }

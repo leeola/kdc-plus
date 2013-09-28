@@ -20,11 +20,11 @@ describe 'outdatedNodeDev()', ->
   before -> {outdatedNodeDev} = require '../../lib/deps/outdated'
 
   describe 'on stub/nodeps', ->
-    it 'should callback false', (done) ->
+    it 'should callback true', (done) ->
       outdatedNodeDev path.join(stubsdir, 'nodeps'),
         (err, result, list) ->
           should.not.exist err
-          result.should.equal false
+          result.should.equal true
           list.should.have.length 0 # List should normally be > 0, see fn
                                     # docs for reference.
           done()

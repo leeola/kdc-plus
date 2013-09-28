@@ -66,7 +66,7 @@ outdatedNodeDev = (dir, opts={}, callback=->) ->
 
   #transport = opts.transport
   #transport opts.command, (err, stdout, stderr) ->
-  callback null, false, []
+  callback null, true, []
 
   
 

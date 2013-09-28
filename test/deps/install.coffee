@@ -32,9 +32,10 @@ describe 'installNodeDev()', ->
       installNodeDev stub, (err) ->
         should.not.exist err
         fs.readdir path.join(stub, 'node_modules'), (err, files) ->
-          should.not.exist err
-          console.log 'Holy shit files', files
-          files.should.have.length 1
+          should.not.exist err,
+            'Reading node_modules returned an error. Does it exist?'
+          files.should.includeEql 'example',
+            'The `example` package was not installed.'
           done()
 
   describe 'on stubs/proddeps', ->
@@ -44,9 +45,10 @@ describe 'installNodeDev()', ->
       installNodeDev stub, (err) ->
         should.not.exist err
         fs.readdir path.join(stub, 'node_modules'), (err, files) ->
-          should.not.exist err
-          console.log 'Holy shit files', files
-          files.should.have.length 1
+          should.not.exist err,
+            'Reading node_modules returned an error. Does it exist?'
+          files.should.includeEql 'example',
+            'The `example` package was not installed.'
           done()
 
 

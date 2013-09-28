@@ -16,7 +16,12 @@ describe 'installNodeDev()', ->
   before -> {installNodeDev} = require '../../lib/deps/install'
 
   describe 'on stubs/nodeps', ->
-    it 'should return an error'
+    it 'should return an error', (done) ->
+      installNodeDev path.join(stubsdir, 'nodeps'),
+        (err) ->
+          should.exist err
+          err.message.should.match /not found/
+          done()
 
   describe 'on stubs/devdeps', ->
     it 'should install the dev deps', (done) ->
@@ -25,8 +30,12 @@ describe 'installNodeDev()', ->
           should.not.exist err
           done()
 
-  describe 'on stubs/installdeps', ->
-    it 'should install the deps'
+  describe 'on stubs/proddeps', ->
+    it 'should install the deps', (done) ->
+      installNodeDev path.join(stubsdir, 'proddeps'),
+        (err) ->
+          should.not.exist err
+          done()
 
 
 describe 'installNodeProd()', ->

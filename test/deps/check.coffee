@@ -21,11 +21,11 @@ describe 'checkNodeDev()', ->
 
   describe 'on stub/nodeps', ->
     it 'should callback false', (done) ->
-      checkNodeDev
-        dir: path.join stubsdir, 'nodeps'
+      checkNodeDev path.join(stubsdir, 'nodeps'),
         (err, result, list) ->
           should.not.exist err
           result.should.equal false
-          list.should.equal []
+          list.should.have.length 0
+          done()
 
 

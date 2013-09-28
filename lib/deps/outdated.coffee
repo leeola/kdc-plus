@@ -44,7 +44,7 @@ check = (opts, callback=->) ->
       next ++index
 
 
-# ## checkNodeDev()
+# ## outdatedNodeDev()
 #
 # Check the given directory for Node Dev deps.
 #
@@ -57,7 +57,7 @@ check = (opts, callback=->) ->
 #
 # See https://github.com/isaacs/npm/pull/3863 for reference.
 #
-checkNodeDev = (dir, opts={}, callback=->) ->
+outdatedNodeDev = (dir, opts={}, callback=->) ->
   if opts instanceof Function
     callback = opts
     opts = {}
@@ -73,5 +73,4 @@ checkNodeDev = (dir, opts={}, callback=->) ->
 
 
 
-exports.check           = check
-exports.checkNodeDev    = checkNodeDev
+exports.outdatedNodeDev     = outdatedNodeDev

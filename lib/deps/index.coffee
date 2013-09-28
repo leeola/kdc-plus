@@ -12,5 +12,5 @@
 
 
 
-exports.check   = require './check'
-exports.resolve = require './resolve'
+exports.install     = require './install'
+exports.outdated    = require './outdated'

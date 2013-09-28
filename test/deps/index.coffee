@@ -5,4 +5,4 @@
 
 
 
-exports.check   = require './check'
+exports.outdated    = require './outdated'

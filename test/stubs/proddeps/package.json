@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "proddep-stub",
+  "version": "0.0.0",
+  "dependencies": {
+    "example": ""
+  }
+}

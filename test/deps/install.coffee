@@ -19,7 +19,11 @@ describe 'installNodeDev()', ->
     it 'should return an error'
 
   describe 'on stubs/devdeps', ->
-    it 'should install the dev deps'
+    it 'should install the dev deps', (done) ->
+      installNodeDev path.join(stubsdir, 'devdeps'),
+        (err) ->
+          should.not.exist err
+          done()
 
   describe 'on stubs/installdeps', ->
     it 'should install the deps'

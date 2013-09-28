@@ -7,4 +7,4 @@
 
 
 
-module.exports = () ->
+module.exports = () -> throw new Error 'Not Implemented'

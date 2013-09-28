@@ -1,8 +1,9 @@
 # 
 # # Install Deps Tests
 #
-path          = require 'path'
-should        = require 'should'
+fs         = require 'fs'
+path       = require 'path'
+should     = require 'should'
 
 
 
@@ -16,25 +17,36 @@ describe 'installNodeDev()', ->
   before -> {installNodeDev} = require '../../lib/deps/install'
 
   describe 'on stubs/nodeps', ->
-    it 'should return an error', (done) ->
-      installNodeDev path.join(stubsdir, 'nodeps'),
-        (err) ->
-          should.exist err
-          err.message.should.match /not found/
-          done()
+    stub = path.join stubsdir, 'nodeps'
+
+    it 'should not install anything', (done) ->
+      installNodeDev stub, (err) ->
+        should.exist err
+        err.message.should.match /not found/
+        done()
 
   describe 'on stubs/devdeps', ->
+    stub = path.join stubsdir, 'devdeps'
+
     it 'should install the dev deps', (done) ->
-      installNodeDev path.join(stubsdir, 'devdeps'),
-        (err) ->
+      installNodeDev stub, (err) ->
+        should.not.exist err
+        fs.readdir path.join(stub, 'node_modules'), (err, files) ->
           should.not.exist err
+          console.log 'Holy shit files', files
+          files.should.have.length 1
           done()
 
   describe 'on stubs/proddeps', ->
-    it 'should install the deps', (done) ->
-      installNodeDev path.join(stubsdir, 'proddeps'),
-        (err) ->
+    stub = path.join stubsdir, 'proddeps'
+
+    it 'should install the prod deps', (done) ->
+      installNodeDev stub, (err) ->
+        should.not.exist err
+        fs.readdir path.join(stub, 'node_modules'), (err, files) ->
           should.not.exist err
+          console.log 'Holy shit files', files
+          files.should.have.length 1
           done()
 
 

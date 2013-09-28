@@ -57,7 +57,13 @@ describe 'installNodeProd()', ->
   before -> {installNodeProd} = require '../../lib/deps/install'
 
   describe 'on stubs/nodeps', ->
-    it 'should return an error'
+    stub = path.join stubsdir, 'nodeps'
+
+    it 'should not install anything', (done) ->
+      installNodeProd stub, (err) ->
+        should.exist err
+        err.message.should.match /not found/
+        done()
 
   describe 'on stubs/devdeps', ->
     it 'should install nothing'

@@ -49,4 +49,16 @@ describe 'outdatedNodeDev()', ->
                                     # docs for reference.
           done()
 
+describe 'outdatedNodeProd()', ->
+  outdatedNodeProd = null
+  before -> {outdatedNodeProd} = require '../../lib/deps/outdated'
+
+  describe 'on stubs/nodeps', ->
+    it 'should callback false'
+
+  describe 'on stubs/devdeps', ->
+    it 'should callback false'
+
+  describe 'on stubs/installdeps', ->
+    it 'should callback false with a list of modules'
 

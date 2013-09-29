@@ -19,17 +19,22 @@ describe 'installNodeDev()', ->
   describe 'on stubs/plainjs', ->
     stub = path.join stubsdir, 'plainjs'
 
-    it 'should return an error'
+    it 'should return an error', (done) ->
+      installNodeDev stub, (err, installed, packages) ->
+        should.exist err
+        err.message.should.match /not found/
+        should.not.exist installed
+        should.not.exist packages
+        done()
 
   describe 'on stubs/nodeps', ->
     stub = path.join stubsdir, 'nodeps'
 
     it 'should not install anything', (done) ->
       installNodeDev stub, (err, installed, packages) ->
-        should.exist err
-        err.message.should.match /not found/
-        should.not.exist installed
-        should.not.exist packages
+        should.not.exist err
+        installed.should.be.false
+        packages.length.should.equal 0
         done()
 
   describe 'on stubs/devdeps', ->
@@ -76,17 +81,22 @@ describe 'installNodeProd()', ->
   describe 'on stubs/plainjs', ->
     stub = path.join stubsdir, 'plainjs'
 
-    it 'should return an error'
+    it 'should return an error', (done) ->
+      installNodeProd stub, (err, installed, packages) ->
+        should.exist err
+        err.message.should.match /not found/
+        should.not.exist installed
+        should.not.exist packages
+        done()
 
   describe 'on stubs/nodeps', ->
     stub = path.join stubsdir, 'nodeps'
 
     it 'should not install anything', (done) ->
       installNodeProd stub, (err, installed, packages) ->
-        should.exist err
-        err.message.should.match /not found/
-        should.not.exist installed
-        should.not.exist packages
+        should.not.exist err
+        installed.should.be.false
+        packages.length.should.eql 0
         done()
 
   describe 'on stubs/devdeps', ->

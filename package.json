@@ -48,6 +48,7 @@
     "coffee-script": "~1.6.3",
     "mocha": "~1.12.1",
     "commander": "~2.0.0",
-    "browserify": "~2.31.0"
+    "browserify": "~2.31.0",
+    "fs-extra": "~0.6.4"
   }
 }

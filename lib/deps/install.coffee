@@ -30,8 +30,15 @@ _installNode = (dir, opts={}, callback=->) ->
         when 34 then callback new Error 'package.json not found'
         else callback err
       return
-    if !!stderr then return callback new Error "Unknown NPM Response #{stderr}"
-    callback null
+    if stderr isnt ''
+      return callback new Error "Unknown NPM Response #{stderr}"
+
+    # Split the response from npm, which is a list of packages installed.
+    # Note that removal of the last result, as npm tends to add a additional
+    # line end character, so we want to trim that.
+    packages = stdout.split('\n')[...-1]
+    installed = packages.length > 0
+    callback null, installed, packages
 
 
 # ## Install Node Dev

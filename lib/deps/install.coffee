@@ -3,8 +3,9 @@
 #
 # Our little dependency resolving module.
 #
-path            = require 'path'
-autoTransport   = require '../transports/auto'
+path                    = require 'path'
+{_npmErrCodeHumanizer}  = require './outdated'
+autoTransport           = require '../transports/auto'
 
 
 
@@ -25,11 +26,7 @@ _installNode = (dir, opts={}, callback=->) ->
   args = opts.command.split ' '
   args.push dir
   transport args, transportOpts, (err, stdout, stderr) ->
-    if err?
-      switch err.code
-        when 34 then callback new Error 'package.json not found'
-        else callback err
-      return
+    if err? then return callback _npmErrCodeHumanizer err
     if stderr isnt ''
       return callback new Error "Unknown NPM Response #{stderr}"
 

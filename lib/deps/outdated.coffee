@@ -86,10 +86,11 @@ outdatedNodeProd = (dir, opts={}, callback=->) ->
   if opts instanceof Function
     callback = opts
     opts = {}
+  opts.transport  ?= autoTransport
   opts.command    ?= 'npm outdated' # should use --production once the npm
                                     # update goes live.
-  opts.transport  ?= autoTransport
 
+  transport = opts.transport
   transportOpts =
     cwd: dir
   

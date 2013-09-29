@@ -53,12 +53,45 @@ describe 'outdatedNodeProd()', ->
   outdatedNodeProd = null
   before -> {outdatedNodeProd} = require '../../lib/deps/outdated'
 
+  describe 'on stubs/plainjs', ->
+    stub = path.join stubsdir, 'plainjs'
+
+    it 'should callback with an error', (done) ->
+      outdatedNodeProd stub, (err, outdated, packages) ->
+        should.exist err
+        err.message.should.match /not found/
+        should.not.exist outdated
+        should.not.exist packages
+        done()
+
   describe 'on stubs/nodeps', ->
-    it 'should callback false'
+    stub = path.join stubsdir, 'nodeps'
+
+    it 'should not callback outdated', (done) ->
+      outdatedNodeProd stub, (err, outdated, packages) ->
+        should.exist err
+        err.message.should.match /not found/
+        should.not.exist outdated
+        should.not.exist packages
+        done()
 
   describe 'on stubs/devdeps', ->
-    it 'should callback false'
+    stub = path.join stubsdir, 'devdeps'
 
-  describe 'on stubs/installdeps', ->
-    it 'should callback false with a list of modules'
+    it 'should not callback outdated', (done) ->
+      outdatedNodeProd stub, (err, outdated, packages) ->
+        should.not.exist err
+        outdated.should.be.false
+        packages.should.be.empty
+        done()
+
+  describe 'on stubs/proddeps', ->
+    stub = path.join stubsdir, 'proddeps'
+
+    it 'should callback outdated with packages', (done) ->
+      outdatedNodeProd stub, (err, outdated, packages) ->
+        should.not.exist err
+        outdated.should.be.true
+        packages.length.should.eql 1
+        done()
 

@@ -70,7 +70,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build', ['clean', 'coffee', 'copy', 'replace']
 
-  grunt.registerTask 'test', ['copy:stubs', 'mochacli:source']
+  grunt.registerTask 'test', ['clean', 'copy:stubs', 'mochacli:source']
   grunt.registerTask 'test:build', ['build', 'mochacli:build']
 
   grunt.registerTask 'prepublish', ['test:build']

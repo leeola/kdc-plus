@@ -3,7 +3,9 @@
 #
 # A simple module as a function to check the dependencies of a directory.
 # 
+fs              = require 'fs'
 path            = require 'path'
+{exec}          = require 'child_process'
 verexp          = require 'verbal-expressions'
 autoTransport   = require '../transports/auto'
 
@@ -86,26 +88,47 @@ outdatedNodeProd = (dir, opts={}, callback=->) ->
   if opts instanceof Function
     callback = opts
     opts = {}
-  opts.transport  ?= autoTransport
   opts.command    ?= 'npm outdated' # should use --production once the npm
                                     # update goes live.
 
-  transport = opts.transport
-  transportOpts =
-    cwd: dir
+  # We're storing our results in this scope so that each asynchronous function
+  # can check the results of the other functions.
+  err       = null
+  exists    = null
+  packages  = null
+  outdated  = null
   
-  args = opts.command.split ' '
-  transport args, transportOpts, (err, stdout, stderr) ->
+
+  fs.exists path.join(dir, 'package.json'), (_exists) ->
+    exists = _exists
+    # If exists calls back first, and it's false bail right away.
+    if not exists then return callback new Error 'package.json not found'
+    if err? then return # exec already handled it
+    # If outdated beat us, it would not callback. So we need to do it
+    if outdated? then return callback null, outdated, packages
+
+  command = "#{opts.command} #{dir}"
+  exec command, cwd:dir, (_err, stdout, stderr) ->
+    err = _err
+    if exists is false then return # exists already called back
     if err? then return callback _npmErrCodeHumanizer err
     if stderr isnt ''
       return callback new Error "Unknown NPM Response '#{stderr}'"
 
+    # Remove the last character, as npm tends to add a additional line
+    # end character, so we want to trim that.
+    stdout = stdout[...-1]
+
     # Split the response from npm, which is a list of outdated packages.
-    # Note that removal of the last result, as npm tends to add a additional
-    # line end character, so we want to trim that.
-    packages    = stdout.split('\n')[...-1]
-    outdated   = packages.length > 0
-    callback null, outdated, packages
+    if stdout != ''
+      packages  = stdout.split('\n')
+    else
+      packages  = []
+    
+    outdated  = packages.length > 0
+    
+    # Only callback if exists already called back true
+    if exists? then callback null, outdated, packages
 
 
 

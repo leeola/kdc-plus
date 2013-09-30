@@ -69,10 +69,9 @@ describe 'outdatedNodeProd()', ->
 
     it 'should not callback outdated', (done) ->
       outdatedNodeProd stub, (err, outdated, packages) ->
-        should.exist err
-        err.message.should.match /not found/
-        should.not.exist outdated
-        should.not.exist packages
+        should.not.exist err
+        packages.should.be.empty
+        outdated.should.be.false
         done()
 
   describe 'on stubs/devdeps', ->

@@ -49,6 +49,7 @@ module.exports = (grunt) ->
         require : ['should', 'coffee-script']
         reporter: 'nyan'
         bail    : true
+        timeout : '5000'
       build   : ['build/test/index.js']
       source  : ['test/index.coffee']
 

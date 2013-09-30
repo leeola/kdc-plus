@@ -3,9 +3,7 @@
 #
 # A simple module as a function to check the dependencies of a directory.
 # 
-fs              = require 'fs'
 path            = require 'path'
-{exec}          = require 'child_process'
 verexp          = require 'verbal-expressions'
 autoTransport   = require '../transports/auto'
 
@@ -81,10 +79,13 @@ outdatedNodeDev = (dir, opts={}, callback=->) ->
 
 
 # ## Node Production Outdated
+#
+# This function is a bit "overly complex" due to the double-async calls,
+# but this is due to the desire to make outdated checks **as fast as
+# possible**. Why? Read the module description.
 outdatedNodeProd = (dir, opts={}, callback=->) ->
-  if opts instanceof Function
-    callback = opts
-    opts = {}
+  if opts instanceof Function then [callback, opts] = [opts, {}]
+  transport = opts.transport ?= autoTransport
   opts.command    ?= 'npm outdated' # should use --production once the npm
                                     # update goes live.
 
@@ -96,15 +97,18 @@ outdatedNodeProd = (dir, opts={}, callback=->) ->
   outdated  = null
   
 
-  fs.exists path.join(dir, 'package.json'), (_exists) ->
-    exists = _exists
+  # We use test -e, which checks for the existance of a file/dir.
+  # For more info see `info test`
+  transport "test -e #{path.join(dir, 'package.json')}", (_err) ->
+    exists = not _err?
+    if err? then return # exec already handled it
     # If exists calls back first, and it's false bail right away.
     if not exists then return callback new Error 'package.json not found'
-    if err? then return # exec already handled it
     # If outdated beat us, it would not callback. So we need to do it
     if outdated? then return callback null, outdated, packages
 
-  exec opts.command, cwd:dir, (_err, stdout, stderr) ->
+
+  transport opts.command, cwd:dir, (_err, stdout, stderr) ->
     err = _err
     if exists is false then return # exists already called back
     if err? then return callback _npmErrCodeHumanizer err
@@ -116,11 +120,7 @@ outdatedNodeProd = (dir, opts={}, callback=->) ->
     stdout = stdout[...-1]
 
     # Split the response from npm, which is a list of outdated packages.
-    if stdout != ''
-      packages  = stdout.split('\n')
-    else
-      packages  = []
-    
+    packages  = if stdout is '' then [] else stdout.split('\n')
     outdated  = packages.length > 0
     
     # Only callback if exists already called back true

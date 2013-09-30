@@ -75,10 +75,7 @@ outdatedNodeDev = (dir, opts={}, callback=->) ->
     callback = opts
     opts = {}
   opts.command    ?= 'npm outdated'
-  opts.transport  ?= autoTransport
 
-  #transport = opts.transport
-  #transport opts.command, (err, stdout, stderr) ->
   callback null, true, []
 
 
@@ -107,8 +104,7 @@ outdatedNodeProd = (dir, opts={}, callback=->) ->
     # If outdated beat us, it would not callback. So we need to do it
     if outdated? then return callback null, outdated, packages
 
-  command = "#{opts.command} #{dir}"
-  exec command, cwd:dir, (_err, stdout, stderr) ->
+  exec opts.command, cwd:dir, (_err, stdout, stderr) ->
     err = _err
     if exists is false then return # exists already called back
     if err? then return callback _npmErrCodeHumanizer err

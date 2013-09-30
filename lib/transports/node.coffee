@@ -7,10 +7,12 @@
 
 
 
-
-module.exports = (args, opts={}, callback) ->
-  if opts instanceof Function
-    callback = opts
-    opts = {}
-  command = args.join ' '
-  exec command, opts, callback
+# ## Node Transport
+#
+# Our Node transport is basically just exec. The API was sort of built
+# to reflect Node's exec API anyway. 
+module.exports = (command, opts={}, callback) ->
+  if opts instanceof Function then [callback, opts] = [opts, {}]
+  execOpts      = {}
+  execOpts.cwd  = opts.cwd if opts.cwd?
+  exec command, execOpts, callback

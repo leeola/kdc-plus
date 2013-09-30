@@ -72,7 +72,7 @@ outdatedNodeDev = (dir, opts={}, callback=->) ->
   if opts instanceof Function
     callback = opts
     opts = {}
-  opts.command    ?= 'npm outdated'
+  opts.command    ?= 'npm outdated --silent'
 
   callback null, true, []
 
@@ -86,8 +86,8 @@ outdatedNodeDev = (dir, opts={}, callback=->) ->
 outdatedNodeProd = (dir, opts={}, callback=->) ->
   if opts instanceof Function then [callback, opts] = [opts, {}]
   transport = opts.transport ?= autoTransport
-  opts.command    ?= 'npm outdated' # should use --production once the npm
-                                    # update goes live.
+  # should use --production as well once the npm update goes live.
+  opts.command    ?= 'npm outdated --silent'
 
   # We're storing our results in this scope so that each asynchronous function
   # can check the results of the other functions.
@@ -122,7 +122,7 @@ outdatedNodeProd = (dir, opts={}, callback=->) ->
     # Split the response from npm, which is a list of outdated packages.
     packages  = if stdout is '' then [] else stdout.split('\n')
     outdated  = packages.length > 0
-    
+
     # Only callback if exists already called back true
     if exists? then callback null, outdated, packages
 

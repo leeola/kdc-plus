@@ -17,10 +17,9 @@ maniutils         = require '../lib/maniutils'
 #
 # The function called when `kdc-plus compile` is used.
 compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
-  if typeof appPath isnt 'string' then [appPath, opts] = [opts, undefined]
-  log 'Error: Not Implemented'
-  process.exit 1
+  if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
 
+  appPath ?= process.cwd()
   appPath = path.resolve appPath
   loadOpts =
     validate: true
@@ -52,22 +51,26 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
     else
       opts.commonjs = false
 
-    # Remember, coffee defaults to on. So we allow the option of turning it off
-    if opts.coffee is false
-      opts.coffee = opts.coffee
-    else if manifest.coffee is false
-      opts.coffee = manifest.coffee
-
+    if opts.coffee? or manifest.coffee?
+      opts.coffee = opts.coffee ? manifest.coffee
+    else
+      opts.coffee = false
 
     if vwarns? then log warning for warning in vwarns
     if vfails?
       log failure for failure in vfails
       return process.exit 1
 
-    cwd = process.cwd()
+    # Take all of our files and make them relative to our appPath if
+    # they are relative.
     files = manifest.source.blocks.app.files
-    files[i] = path.join(appPath, file) for file,i in files
+    for file,i in files
+      # Skip this file if it's an /absolute/path
+      if file[0] is path.sep then continue
+      files[i] = path.resolve path.join appPath, file
 
+    # Our cjs is a multi-file loader, so allow it to load if the caller wants
+    # cjs, otherwise use our default loader
     if opts.commonjs
       cjsopts = extensions: []
       cjsopts.extensions.push '.coffee' if opts.coffee
@@ -75,6 +78,7 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
     else
       loader    = new LoadMulti files
 
+    # Add our coffee transform
     if opts.coffee
       loader.transform (file, ext) ->
         if ext is '.coffee' then return new CoffeeTransform()
@@ -96,6 +100,8 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
       log "Error Saving Compiled KDApp: #{err.message}"
       process.exit 1
 
+    # Now that we've declared everything, pipe our loader to our "outer",
+    # which is the final destination for our stream.
     loader.pipe outer
 
 
@@ -116,15 +122,13 @@ exec = (argv, log=console.error) ->
   compileCmd.option '-f, --file <file>', 'Choose the output file'
   compileCmd.option '-c, --coffee', 'CoffeeScript support'
   compileCmd.option '-n, --commonjs', 'Commonjs support'
-  compileCmd.action ->
-    console.log 'Compile Command'
-    compile args..., log
+  compileCmd.action -> compile arguments..., log
 
   # Install command and opts
   installCmd  = program.command 'install'
   installCmd.description 'Install the KDApp dependencies, if any.'
   installCmd.option '--production', 'Install production dependencies only'
-  installCmd.action (cmd) -> install cmd, log
+  installCmd.action -> install arguments..., log
 
   # Outdated command and opts
   outdatedCmd = program.command 'outdated'
@@ -155,7 +159,8 @@ exec = (argv, log=console.error) ->
   #   kdc-plus outdated --production ./
   # `args.length == 2` for the first command, `args.length == 0` for the
   # second command.. which seems odd. So, i am using rawArgs instead.
-  if program.rawArgs.length == 2 then compile coffee: true, log
+  if program.rawArgs.length == 2
+    compile process.cwd(), [], coffee: true, log
 
 
 
@@ -164,7 +169,7 @@ exec = (argv, log=console.error) ->
 # Install any of the dependencies specified in the manifest, and also the
 # corrisponding dependency files *(package.json, bower.json, etc)*.
 install = (appPath, unknownArgs..., opts={}, log=console.error) ->
-  if typeof appPath isnt 'string' then [appPath, opts] = [opts, undefined]
+  if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
   log 'Error: Not Implemented'
   process.exit 1
 
@@ -175,7 +180,7 @@ install = (appPath, unknownArgs..., opts={}, log=console.error) ->
 # outdated checks if any of the dependencies specified in the manifest, and
 # also the corrisponding dependency files *(package.json, bower.json, etc)*.
 outdated = (appPath, unknownArgs..., opts={}, log=console.error) ->
-  if typeof appPath isnt 'string' then [appPath, opts] = [opts, undefined]
+  if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
   log 'Error: Not Implemented'
   process.exit 1
 

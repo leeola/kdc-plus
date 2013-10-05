@@ -13,25 +13,13 @@ maniutils         = require '../lib/maniutils'
 
 
 
-exec = exports.exec = (argv, log=console.error) ->
-  opts = require 'commander'
-
-  # Define our opts
-  opts.version '@@version'
-  opts.usage '[options] [kdapp directory]'
-  opts.option '-p, --pipe', 'Pipe to STDOUT instead of to a file'
-  opts.option '-f, --file <file>', 'Choose the output file'
-  opts.option '--no-coffee', 'No coffee-script support'
-  opts.option '-c, --commonjs', 'Support commonjs'
-  opts.parse argv
-
-  [appPath, unhandledArgs] = opts.args
-
-  if not appPath? then appPath = process.cwd()
-
-  if unhandledArgs?
-    log "Unknown Arguments: #{JSON.stringify unhandledArgs}"
-    return process.exit 1
+# ## Compile
+#
+# The function called when `kdc-plus compile` is used.
+compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
+  if typeof appPath isnt 'string' then [appPath, opts] = [opts, undefined]
+  log 'Error: Not Implemented'
+  process.exit 1
 
   appPath = path.resolve appPath
   loadOpts =
@@ -112,5 +100,90 @@ exec = exports.exec = (argv, log=console.error) ->
 
 
 
+# ## Exec
+#
+# The main function called when `kdc-plus` is executed. This mainly just
+# calculates options and ensures a manifest loads.
+exec = (argv, log=console.error) ->
+  program = require 'commander'
+  program.version '@@version'
 
+  # Compile command and opts
+  compileCmd  = program.command 'compile'
+  compileCmd.usage '[options] <kdapp directory>'
+  compileCmd.description 'Compile a KDApp'
+  compileCmd.option '-p, --pipe', 'Pipe to STDOUT instead of to a file'
+  compileCmd.option '-f, --file <file>', 'Choose the output file'
+  compileCmd.option '-c, --coffee', 'CoffeeScript support'
+  compileCmd.option '-n, --commonjs', 'Commonjs support'
+  compileCmd.action ->
+    console.log 'Compile Command'
+    compile args..., log
+
+  # Install command and opts
+  installCmd  = program.command 'install'
+  installCmd.description 'Install the KDApp dependencies, if any.'
+  installCmd.option '--production', 'Install production dependencies only'
+  installCmd.action (cmd) -> install cmd, log
+
+  # Outdated command and opts
+  outdatedCmd = program.command 'outdated'
+  outdatedCmd.description 'List dependencies that are not met, if any.'
+  outdatedCmd.option '--production', 'Outdated production dependencies only'
+  outdatedCmd.action -> outdated arguments..., log
+
+  # Add a helper warning that compile is the default command
+  program.on '--help', ->
+    # I belive commandjs uses consolelog, so we're going to use the same
+    # for now
+    _log = console.log
+    _log '  Legacy Support:'
+    _log ''
+    _log '    If this bin is called with no arguments it will run the compile'
+    _log '    command with options matching that of the original kdc compiler.'
+    _log '    This is done to support legacy kdc usage.'
+    _log '    For additional options, see `kdc-plus compile --help`'
+    _log ''
+
+  # And finally, parse the args
+  program.parse argv
+
+  # If there are no args, run compile with legacy kdc args
+  # Note: We're using `rawArgs` instead of `args` due to inconsistent
+  # behavior with args with the following two commands:
+  #   kdc-plus outdated --production
+  #   kdc-plus outdated --production ./
+  # `args.length == 2` for the first command, `args.length == 0` for the
+  # second command.. which seems odd. So, i am using rawArgs instead.
+  if program.rawArgs.length == 2 then compile coffee: true, log
+
+
+
+# ## Install
+#
+# Install any of the dependencies specified in the manifest, and also the
+# corrisponding dependency files *(package.json, bower.json, etc)*.
+install = (appPath, unknownArgs..., opts={}, log=console.error) ->
+  if typeof appPath isnt 'string' then [appPath, opts] = [opts, undefined]
+  log 'Error: Not Implemented'
+  process.exit 1
+
+
+
+# ## Outdated
+#
+# outdated checks if any of the dependencies specified in the manifest, and
+# also the corrisponding dependency files *(package.json, bower.json, etc)*.
+outdated = (appPath, unknownArgs..., opts={}, log=console.error) ->
+  if typeof appPath isnt 'string' then [appPath, opts] = [opts, undefined]
+  log 'Error: Not Implemented'
+  process.exit 1
+
+
+
+
+
+exports.exec      = exec
+exports.install   = install
+exports.outdated  = outdated
 if require.main is module then exec process.argv

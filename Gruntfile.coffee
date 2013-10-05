@@ -34,6 +34,8 @@ module.exports = (grunt) ->
 
     copy:
       bin:
+        options:
+          mode: true
         expand  : true
         cwd     : './'
         dest    : 'build'

@@ -12,6 +12,13 @@ should      = require 'should'
 
 
 
+COFFEEBIN   = path.resolve path.join(
+  require.resolve('coffee-script'),
+  '..', '..', '..',
+  'bin', 'coffee'
+)
+
+
 
 describe 'bin/kdc-plus', ->
   stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
@@ -76,13 +83,30 @@ describe 'bin/kdc-plus', ->
         stderr.should.match /success/i
         done()
   
-    it 'should accept a transform bin'
+    describe '--transform', ->
+      upperBin = null
+      before ->
+        upperBin = path.join __dirname, '_utils', 'upperbin'
+        if path.extname(__filename) is '.coffee'
+          upperBin = "#{COFFEEBIN} #{upperBin}.coffee"
+        else
+          upperBin = "node #{upperBin}.js"
+
+      it 'should accept a transform bin', (done) ->
+        stub = path.join stubsdir, 'plainjs'
+        bin [stub, '-p', '--transform', upperBin], (err, stdout, stderr) ->
+          console.log 'Lawl', stdout
+          should.not.exist err
+          stdout.should.match /REQUIRED TO PASS/
+          stderr.should.match /success/i
+          done()
 
     it 'should limit the transform with an extension'
 
-    it 'should accept multiple transform bins'
-
-    it 'should limit multiple transforms by extensions'
+    # The following two tests are commented out due to an undecided
+    # "multi-transform" syntax. When it is decided, these will be enabled.
+    #it 'should accept multiple transform bins'
+    #it 'should limit multiple transforms by extensions'
 
   describe '(install)', ->
     bin       = null

@@ -85,7 +85,7 @@ class StdioTransform extends Transform
     if typeof fileMatcher is 'string'
       fileMatcher = new RegExp "\\.#{fileMatcher}$"
     (filename) =>
-      if not fileMatcher? or not fileMatcher.test filename then return null
+      if fileMatcher? and not fileMatcher.test filename then return null
       new @ stdioPath
 
   constructor: (stdioPath, stdout=true, stderr=false) ->
@@ -106,7 +106,7 @@ class StdioTransform extends Transform
     @_process.stdin.write chunk
     next()
 
-  _flush: -> @_process.disconnect()
+  _flush: -> @_process.stdin.end()
 
 
 

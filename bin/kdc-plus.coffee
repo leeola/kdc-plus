@@ -7,7 +7,10 @@ fs                = require 'fs'
 path              = require 'path'
 {CoffeeTransform} = require '../lib/streams/coffee'
 {Commonjs}        = require '../lib/streams/commonjs'
-{LoadMulti}       = require '../lib/streams/load'
+{
+  LoadMulti
+  StdioTransform
+}                 = require '../lib/streams/load'
 maniutils         = require '../lib/maniutils'
 
 
@@ -82,6 +85,18 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
     if opts.coffee
       loader.transform (file, ext) ->
         if ext is '.coffee' then return new CoffeeTransform()
+
+    if opts.transform?
+      # Currently we only support a single user transform, so until we figure
+      # out the transform cli syntax, lets pretend it was multiple results so
+      # that we can later easily support multiple transforms.
+      opts.transform  = [opts.transform]
+      opts.transExt   = [opts.transExt]
+      for transform, i in opts.transform
+        transExt = opts.transExt[i]
+        loader.transform StdioTransform.Filter transform, transExt
+
+
 
     # Now we finally pipe the output out of our program. We either pipe it to
     # a file, or STDOUT (if defined)

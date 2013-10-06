@@ -103,7 +103,9 @@ describe 'StdioTransform()', ->
       should.not.exist filter '/some/random/file.jsbad'
       filter('/some/random/file.js').should.be.instanceOf StdioTransform
 
-    it 'should return null if no pattern is given', ->
+    it 'should match everything if no pattern is given', ->
       filter    = StdioTransform.Filter upperBin
-      should.not.exist filter()
+      stdt      = filter('fakefile')
+      should.exist stdt
+      stdt.should.be.instanceOf StdioTransform
 

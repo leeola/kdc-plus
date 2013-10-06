@@ -57,3 +57,25 @@ describe 'LoadMulti()', ->
         d[1][0].should.equal stub_files[1]
         d[1][1].should.equal path.extname stub_files[1]
         return done()
+
+
+
+describe 'StdTransform()', ->
+  stub_files    = [
+    path.join stubsdir, 'commonjs', 'main.js'
+    path.join stubsdir, 'commonjs', 'required.js'
+  ]
+  StdTransform  = null
+  before -> {StdTransform} = require '../../lib/streams/load'
+
+  it 'should modify a string filter to regex matching extensions'
+
+  it 'should not modify a regex filter arg'
+
+  it 'should pipe data to and back from the given executable'
+
+  it 'should offer a filter method for streams that want transformers'
+
+  it 'should filter based on the filter regex'
+
+

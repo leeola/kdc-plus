@@ -95,14 +95,10 @@ class StdioTransform extends Transform
     @_process = spawn bin, args
 
     if stdout
-      @_process.stdout.on 'data', (chunk) =>
-        console.log 'Stdout Data:', chunk
-        @push chunk
+      @_process.stdout.on 'data', (chunk) => @push chunk
 
     if stderr
-      @_process.stderr.on 'data', (chunk) =>
-        console.log 'Stdout Data:', chunk
-      @push chunk
+      @_process.stderr.on 'data', (chunk) => @push chunk
 
     @_process.on 'close', => @push null
 

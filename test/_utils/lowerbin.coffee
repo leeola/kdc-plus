@@ -5,7 +5,7 @@
 # For more information, see the LowerCaseTransform comment doc
 # found in ./index.coffee
 #
-{LowerCaseTransform}  = require './index.coffee'
+{LowerCaseTransform}  = require './index'
 
 
 

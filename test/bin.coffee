@@ -6,17 +6,15 @@
 # the implementation tests. I just want to make sure to cover basic regression
 # protection for the bin itself.
 #
-path        = require 'path'
-should      = require 'should'
-{binGen}    = require './_utils'
+path    = require 'path'
+should  = require 'should'
+{
+  UPPERBIN
+  binGen
+}       = require './_utils'
 
 
 
-COFFEEBIN   = path.resolve path.join(
-  require.resolve('coffee-script'),
-  '..', '..', '..',
-  'bin', 'coffee'
-)
 
 
 
@@ -86,15 +84,10 @@ describe 'bin/kdc-plus', ->
     describe '--transform', ->
       upperBin = null
       before ->
-        upperBin = path.join __dirname, '_utils', 'upperbin'
-        if path.extname(__filename) is '.coffee'
-          upperBin = "#{COFFEEBIN} #{upperBin}.coffee"
-        else
-          upperBin = "node #{upperBin}.js"
 
       it 'should accept a transform bin', (done) ->
         stub = path.join stubsdir, 'plainjs'
-        bin [stub, '-p', '--transform', upperBin], (err, stdout, stderr) ->
+        bin [stub, '-p', '--transform', UPPERBIN], (err, stdout, stderr) ->
           should.not.exist err
           stdout.should.match /REQUIRED TO PASS/
           stderr.should.match /success/i
@@ -103,7 +96,7 @@ describe 'bin/kdc-plus', ->
       it 'should limit the transform with an extension', (done) ->
           stub = path.join stubsdir, 'multifiles'
           bin [stub, '-p',
-            '--transform', upperBin
+            '--transform', UPPERBIN
             '--trans-ext', 'coffee'
           ],
           (err, stdout, stderr) ->

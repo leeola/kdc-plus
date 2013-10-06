@@ -12,6 +12,23 @@ path        = require 'path'
 
 
 
+COFFEEBIN   = path.resolve path.join(
+  require.resolve('coffee-script'),
+  '..', '..', '..',
+  'bin', 'coffee'
+)
+LOWERBIN    = path.join __dirname, 'upperbin'
+UPPERBIN    = path.join __dirname, 'upperbin'
+if path.extname(__filename) is '.coffee'
+  LOWERBIN  = "#{COFFEEBIN} #{LOWERBIN}.coffee"
+  UPPERBIN  = "#{COFFEEBIN} #{UPPERBIN}.coffee"
+else
+  LOWERBIN  = "node #{LOWERBIN}.js"
+  UPPERBIN  = "node #{UPPERBIN}.js"
+
+
+
+
 # # LowerCaseTransform
 #
 # Our lowercase transform class powers our lowercase executable,
@@ -90,6 +107,9 @@ binGen = (binName, _args=[], _opts={}) ->
 
 
 
+exports.COFFEEBIN           = COFFEEBIN
+exports.LOWERBIN            = LOWERBIN
+exports.UPPERBIN            = UPPERBIN
 exports.LowerCaseTransform  = LowerCaseTransform
 exports.UpperCaseTransform  = UpperCaseTransform
 exports.binGen              = binGen

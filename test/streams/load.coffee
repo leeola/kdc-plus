@@ -4,6 +4,9 @@
 path          = require 'path'
 {PassThrough} = require 'stream'
 should        = require 'should'
+{
+  UPPERBIN
+}             = require '../_utils'
 
 
 
@@ -69,16 +72,12 @@ describe 'LoadMulti()', ->
 
 
 describe 'StdioTransform()', ->
-  lowerBin      = "#{coffeebin} "+ path.join __dirname,
-    '..', '_utils', 'lowerbin.coffee'
-  upperBin      = "#{coffeebin} "+ path.join __dirname,
-    '..', '_utils', 'upperbin.coffee'
   StdioTransform  = null
   before -> {StdioTransform} = require '../../lib/streams/load'
 
   it 'should pipe data to and back from the given executable', (done) ->
     sin   = new PassThrough()
-    stdt  = new StdioTransform upperBin
+    stdt  = new StdioTransform UPPERBIN
     sout  = new PassThrough()
     sin.pipe(stdt).pipe(sout)
     sout.on 'data', (chunk) ->
@@ -88,23 +87,23 @@ describe 'StdioTransform()', ->
 
   describe '.Filter()', ->
     it 'should have a static filter method', ->
-      filter    = StdioTransform.Filter upperBin
+      filter    = StdioTransform.Filter UPPERBIN
       filter.should.be.instanceOf Function
 
     it 'should filter based on the filter regex', ->
-      filter    = StdioTransform.Filter upperBin, /foo/
+      filter    = StdioTransform.Filter UPPERBIN, /foo/
       should.not.exist filter 'bar'
       filter('foo').should.be.instanceOf StdioTransform
 
     it 'should accept a string and match extensions for that string', ->
-      filter    = StdioTransform.Filter upperBin, 'js'
+      filter    = StdioTransform.Filter UPPERBIN, 'js'
       should.not.exist filter '/some/random/file.coffee'
       should.not.exist filter '/some/random/file.badjs'
       should.not.exist filter '/some/random/file.jsbad'
       filter('/some/random/file.js').should.be.instanceOf StdioTransform
 
     it 'should match everything if no pattern is given', ->
-      filter    = StdioTransform.Filter upperBin
+      filter    = StdioTransform.Filter UPPERBIN
       stdt      = filter('fakefile')
       should.exist stdt
       stdt.should.be.instanceOf StdioTransform

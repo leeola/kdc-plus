@@ -5,7 +5,7 @@
 # For more information, see the UpperCaseTransform comment doc
 # found in ./index.coffee
 #
-{UpperCaseTransform}  = require './index.coffee'
+{UpperCaseTransform}  = require './index'
 
 
 

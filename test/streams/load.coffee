@@ -1,12 +1,20 @@
 # 
 # # Load Stream Tests
 #
-path      = require 'path'
-should    = require 'should'
+path          = require 'path'
+{PassThrough} = require 'stream'
+should        = require 'should'
 
 
 
-stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
+
+stubsdir    = path.join process.cwd(), 'build', 'test', 'stubs'
+coffeebin   = path.resolve path.join(
+  require.resolve('coffee-script'),
+  '..', '..', '..',
+  'bin', 'coffee'
+)
+
 
 
 describe 'LoadMulti()', ->
@@ -61,21 +69,35 @@ describe 'LoadMulti()', ->
 
 
 describe 'StdTransform()', ->
-  stub_files    = [
-    path.join stubsdir, 'commonjs', 'main.js'
-    path.join stubsdir, 'commonjs', 'required.js'
-  ]
+  lowerBin      = "#{coffeebin} "+ path.join __dirname,
+    '..', '_utils', 'lowerbin.coffee'
+  upperbin      = "#{coffeebin} "+ path.join __dirname,
+    '..', '_utils', 'upperbin.coffee'
   StdTransform  = null
   before -> {StdTransform} = require '../../lib/streams/load'
 
-  it 'should modify a string filter to regex matching extensions'
+  it 'should pipe data to and back from the given executable', (done) ->
+    sin   = new PassThrough()
+    stdt  = new StdTransform upperBin, regExp
+    sout  = new PassThrough()
+    sin.pipe(stdt).pipe(sout)
+    sin.write 'foo'
+    sout.read().should.equal 'FOO'
 
-  it 'should not modify a regex filter arg'
+  describe '.Filter()', ->
+    it 'should have a filter function', ->
+      filter    = StdTransform.Filter upperBin
+      filter().should.be.instanceOf StdTransform
 
-  it 'should pipe data to and back from the given executable'
+    it 'should filter based on the filter regex', ->
+      filter    = StdTransform.Filter upperBin, /foo/
+      should.not.exist filter 'bar'
+      filter().should.be.instanceOf StdTransform
 
-  it 'should offer a filter method for streams that want transformers'
-
-  it 'should filter based on the filter regex'
-
+    it 'should accept a string and match extensions for that string', ->
+      filter    = StdTransform.Filter upperBin, 'js'
+      should.not.exist filter '/some/random/file.coffee'
+      should.not.exist filter '/some/random/file.badjs'
+      should.not.exist filter '/some/random/file.jsbad'
+      filter('/some/random/file.js').should.be.instanceOf StdTransform
 

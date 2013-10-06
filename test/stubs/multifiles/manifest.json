@@ -1,0 +1,15 @@
+{
+  "name": "Stub",
+  "path": ".",
+  "source": {
+    "blocks": {
+      "app": {
+        "files": [
+          "./one.js",
+          "./two.coffee"
+         ]
+      }
+    }
+  }
+}
+

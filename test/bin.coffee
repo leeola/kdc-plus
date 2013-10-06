@@ -121,7 +121,14 @@ describe 'bin/kdc-plus', ->
           'stdout is not matching as many times as expected'
         stderr.should.match /success/i
         done()
+  
+    it 'should accept a transform bin'
 
+    it 'should limit the transform with an extension'
+
+    it 'should accept multiple transform bins'
+
+    it 'should limit multiple transforms by extensions'
 
   describe '(install)', ->
     bin       = null

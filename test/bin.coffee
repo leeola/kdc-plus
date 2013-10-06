@@ -95,13 +95,25 @@ describe 'bin/kdc-plus', ->
       it 'should accept a transform bin', (done) ->
         stub = path.join stubsdir, 'plainjs'
         bin [stub, '-p', '--transform', upperBin], (err, stdout, stderr) ->
-          console.log 'Lawl', stdout
           should.not.exist err
           stdout.should.match /REQUIRED TO PASS/
           stderr.should.match /success/i
           done()
 
-    it 'should limit the transform with an extension'
+      it 'should limit the transform with an extension', (done) ->
+          stub = path.join stubsdir, 'multifiles'
+          bin [stub, '-p',
+            '--transform', upperBin
+            '--trans-ext', 'coffee'
+          ],
+          (err, stdout, stderr) ->
+            should.not.exist err
+            stdout.should.match /required to pass/
+            stdout.should.match /REQUIRED TO PASS/
+            stdout.should.match /required to pass[\w\W]*REQUIRED TO PASS/,
+              'The transforms are being applied in the incorrect order'
+            stderr.should.match /success/i
+            done()
 
     # The following two tests are commented out due to an undecided
     # "multi-transform" syntax. When it is decided, these will be enabled.

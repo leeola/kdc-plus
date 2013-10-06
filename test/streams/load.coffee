@@ -68,36 +68,42 @@ describe 'LoadMulti()', ->
 
 
 
-describe 'StdTransform()', ->
+describe 'StdioTransform()', ->
   lowerBin      = "#{coffeebin} "+ path.join __dirname,
     '..', '_utils', 'lowerbin.coffee'
-  upperbin      = "#{coffeebin} "+ path.join __dirname,
+  upperBin      = "#{coffeebin} "+ path.join __dirname,
     '..', '_utils', 'upperbin.coffee'
-  StdTransform  = null
-  before -> {StdTransform} = require '../../lib/streams/load'
+  StdioTransform  = null
+  before -> {StdioTransform} = require '../../lib/streams/load'
 
   it 'should pipe data to and back from the given executable', (done) ->
     sin   = new PassThrough()
-    stdt  = new StdTransform upperBin, regExp
+    stdt  = new StdioTransform upperBin
     sout  = new PassThrough()
     sin.pipe(stdt).pipe(sout)
+    sout.on 'data', (chunk) ->
+      chunk.toString().should.equal 'FOO'
+      done()
     sin.write 'foo'
-    sout.read().should.equal 'FOO'
 
   describe '.Filter()', ->
-    it 'should have a filter function', ->
-      filter    = StdTransform.Filter upperBin
-      filter().should.be.instanceOf StdTransform
+    it 'should have a static filter method', ->
+      filter    = StdioTransform.Filter upperBin
+      filter.should.be.instanceOf Function
 
     it 'should filter based on the filter regex', ->
-      filter    = StdTransform.Filter upperBin, /foo/
+      filter    = StdioTransform.Filter upperBin, /foo/
       should.not.exist filter 'bar'
-      filter().should.be.instanceOf StdTransform
+      filter('foo').should.be.instanceOf StdioTransform
 
     it 'should accept a string and match extensions for that string', ->
-      filter    = StdTransform.Filter upperBin, 'js'
+      filter    = StdioTransform.Filter upperBin, 'js'
       should.not.exist filter '/some/random/file.coffee'
       should.not.exist filter '/some/random/file.badjs'
       should.not.exist filter '/some/random/file.jsbad'
-      filter('/some/random/file.js').should.be.instanceOf StdTransform
+      filter('/some/random/file.js').should.be.instanceOf StdioTransform
+
+    it 'should return null if no pattern is given', ->
+      filter    = StdioTransform.Filter upperBin
+      should.not.exist filter()
 

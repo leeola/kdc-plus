@@ -3,10 +3,14 @@
 #
 # Load a given list of files and stream them back.
 #
-fs              = require 'fs'
-path            = require 'path'
-{Readable}      = require 'stream'
-{CoffeeFile}    = require './coffee'
+{spawn}       = require 'child_process'
+fs            = require 'fs'
+path          = require 'path'
+{
+  Readable
+  Transform
+}             = require 'stream'
+{CoffeeFile}  = require './coffee'
 
 
 
@@ -65,4 +69,55 @@ class LoadMulti extends Readable
 
 
 
-exports.LoadMulti = LoadMulti
+# ## StdioTransform
+#
+# Our Stdio Transform stream will take the file path of a binary to
+# transform our incoming stream with. It's basically just an interface
+# for an executable transform, such as `coffee -i`.
+class StdioTransform extends Transform
+  # ### Static Method: Filter
+  #
+  # Our static filter method returns a function which will return a new
+  # StdioTransform instance each time it is called, if the given regex
+  # pattern matches. A string is also accepted as the 2nd argument, which is
+  # used to match the file extension. If no match is found, `null` is returned
+  @Filter: (stdioPath, fileMatcher) ->
+    if typeof fileMatcher is 'string'
+      fileMatcher = new RegExp "\\.#{fileMatcher}$"
+    (filename) =>
+      if not fileMatcher? or not fileMatcher.test filename then return null
+      new @ stdioPath
+
+  constructor: (stdioPath, stdout=true, stderr=false) ->
+    super
+    args = stdioPath.split ' '
+    bin = args.shift()
+    @_process = spawn bin, args
+
+    if stdout
+      @_process.stdout.on 'data', (chunk) =>
+        console.log 'Stdout Data:', chunk
+        @push chunk
+
+    if stderr
+      @_process.stderr.on 'data', (chunk) =>
+        console.log 'Stdout Data:', chunk
+      @push chunk
+
+    @_process.on 'close', => @push null
+
+  _transform: (chunk, enc, next) ->
+    @_process.stdin.write chunk
+    next()
+
+  _flush: -> @_process.disconnect()
+
+
+
+
+
+
+
+
+exports.LoadMulti       = LoadMulti
+exports.StdioTransform  = StdioTransform

@@ -118,11 +118,15 @@ exec = (argv, log=console.error) ->
   compileCmd  = program.command 'compile'
   compileCmd.usage '[options] <kdapp directory>'
   compileCmd.description 'Compile a KDApp'
-  compileCmd.option '-p, --pipe', 'Pipe to STDOUT instead of to a file'
-  compileCmd.option '-f, --file <file>', 'Choose the output file'
   compileCmd.option '-c, --coffee', 'CoffeeScript support'
   compileCmd.option '-n, --commonjs', 'Commonjs support'
+  compileCmd.option '-t, --transform <bin>', 'Add a Stream Transform Binary'
+  compileCmd.option '-e, --trans-ext <ext>', 'A file extension filter '+
+    'for the previous transform'
+  compileCmd.option '-p, --pipe', 'Pipe to STDOUT instead of to a file'
+  compileCmd.option '-f, --file <file>', 'Choose the output file'
   compileCmd.action -> compile arguments..., log
+
 
   # Install command and opts
   installCmd  = program.command 'install'

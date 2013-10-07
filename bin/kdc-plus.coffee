@@ -22,14 +22,12 @@ VERSION = '@@version'
 
 
 
-# ## Compile
+# ## Load Manifest
 #
-# The function called when `kdc-plus compile` is used.
-compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
-  if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
-
-  appPath ?= process.cwd()
-  appPath = path.resolve appPath
+# Since many of the commands load the manifest, and have to deal with
+# failures/etc in the same manner, this is a little convenience function
+# which handles the grunt work and returns the manifest.
+_loadManifest = (appPath, callback) ->
   loadOpts =
     validate: true
 
@@ -38,6 +36,25 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
       log "Error Loading Manifest: #{err.message}"
       return process.exit 1
 
+    if vwarns? then log warning for warning in vwarns
+    if vfails?
+      log failure for failure in vfails
+      return process.exit 1
+
+    callback manifest
+
+
+
+# ## Compile
+#
+# The function called when `kdc-plus compile` is used.
+compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
+  if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
+
+  appPath ?= process.cwd()
+  appPath = path.resolve appPath
+
+  _loadManifest appPath, (manifest) ->
     # ## CLI & Manifest Defaults
     # Now that we have a manifest loaded, assign our defaults, letting the
     # CLI opts override everything.
@@ -66,11 +83,6 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
       opts.coffee = opts.coffee ? manifest.coffee
     else
       opts.coffee = false
-
-    if vwarns? then log warning for warning in vwarns
-    if vfails?
-      log failure for failure in vfails
-      return process.exit 1
 
     # Take all of our files and make them relative to our appPath if
     # they are relative.
@@ -209,9 +221,14 @@ exec = (argv, log=console.error) ->
 # corrisponding dependency files *(package.json, bower.json, etc)*.
 install = (appPath, unknownArgs..., opts={}, log=console.error) ->
   if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
-  log 'Error: Not Implemented'
-  process.exit 1
+  log 'Not Implemented'
+  return process.exit 1
 
+  appPath ?= process.cwd()
+  appPath = path.resolve appPath
+
+  _loadManifest appPath, (manifest) ->
+    
 
 
 # ## Outdated
@@ -220,8 +237,14 @@ install = (appPath, unknownArgs..., opts={}, log=console.error) ->
 # also the corrisponding dependency files *(package.json, bower.json, etc)*.
 outdated = (appPath, unknownArgs..., opts={}, log=console.error) ->
   if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
-  log 'Error: Not Implemented'
-  process.exit 1
+  log 'Not Implemented'
+  return process.exit 1
+
+  appPath ?= process.cwd()
+  appPath = path.resolve appPath
+
+  _loadManifest appPath, (manifest) ->
+    
 
 
 

@@ -16,6 +16,12 @@ maniutils         = require '../lib/maniutils'
 
 
 
+# The following variable is replaced by Grunt with the version found
+# in package.json
+VERSION = '@@version'
+
+
+
 # ## Compile
 #
 # The function called when `kdc-plus compile` is used.
@@ -43,6 +49,8 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
     # Since pipe desn't make sense as a manifest option, lets warn it.
     if manifest.pipe is true
       log 'Warning: "pipe" is not supported in the manifest'
+
+    opts.bare ?= false
 
     if opts.file? or manifest.file?
       opts.file = opts.file ? manifest.file
@@ -84,7 +92,7 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
     # Add our coffee transform
     if opts.coffee
       loader.transform (file, ext) ->
-        if ext is '.coffee' then return new CoffeeTransform bare: true
+        if ext is '.coffee' then return new CoffeeTransform bare: opts.bare
 
     if opts.transform?
       # Currently we only support a single user transform, so until we figure
@@ -96,16 +104,25 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
         transExt = opts.transExt[i]
         loader.transform StdioTransform.Filter transform, transExt
 
-
-
     # Now we finally pipe the output out of our program. We either pipe it to
     # a file, or STDOUT (if defined)
     if opts.pipe
       outer   = process.stdout
-      loader.on 'end', -> log "KDApp Compiled Successfully!"
+
+      # For pipe, there is nothing we need to end. So when our loader is done,
+      # make sure to add our closure-close, and log success
+      loader.on 'end', ->
+        outer.write "\n})();"
+        log "KDApp Compiled Successfully!"
     else
       outer   = fs.createWriteStream path.join appPath, opts.file
-      outer.on 'finish', -> log "KDApp Compiled Successfully!"
+
+      # When our loader is done, close our closure and end the file stream
+      loader.on 'end', -> outer.end "\n})();"
+      # We wait till the file stream ends fully to ensure we don't prematurely
+      # call success if an error occurs.. it just looks bad when you do that.
+      outer.on 'finish', ->
+        log "KDApp Compiled Successfully!"
 
     loader.on 'error', (err) ->
       log "Error Compiling KDApp: #{err.message}"
@@ -115,17 +132,11 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
       log "Error Saving Compiled KDApp: #{err.message}"
       process.exit 1
 
-    # Now that we've declared everything, pipe our loader to our "outer",
-    # which is the final destination for our stream.
-
     # First, write our closure start to the outer
-    outer.write "/* Compiled by kdc-plus v#{opts.version} */\n(function(){\n"
+    outer.write "/* Compiled by kdc-plus v#{VERSION} */\n(function(){\n"
 
     # On data, write it to our outer
     loader.on 'data', (chunk) -> outer.write chunk
-
-    # And finally, when the data ends, close our app closure
-    loader.on 'end', -> outer.write "\n})()"
 
 
 
@@ -135,7 +146,7 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
 # calculates options and ensures a manifest loads.
 exec = (argv, log=console.error) ->
   program = require 'commander'
-  program.version '@@version'
+  program.version VERSION
 
   # Compile command and opts
   compileCmd  = program.command 'compile'
@@ -143,6 +154,7 @@ exec = (argv, log=console.error) ->
   compileCmd.description 'Compile a KDApp'
   compileCmd.option '-c, --coffee', 'CoffeeScript support'
   compileCmd.option '-n, --commonjs', 'Commonjs support'
+  compileCmd.option '-b, --bare', 'For languages that support it, no closure'
   compileCmd.option '-t, --transform <bin>', 'Add a Stream Transform Binary'
   compileCmd.option '-e, --trans-ext <ext>', 'A file extension filter '+
     'for the previous transform'
@@ -187,7 +199,7 @@ exec = (argv, log=console.error) ->
   # `args.length == 2` for the first command, `args.length == 0` for the
   # second command.. which seems odd. So, i am using rawArgs instead.
   if program.rawArgs.length == 2
-    compile process.cwd(), [], coffee: true, log
+    compile process.cwd(), [], coffee: true, bare: true, log
 
 
 

@@ -1,5 +1,12 @@
 # 0.2.0 /
 
+ - Legacy Support: With the heavy changes to the command line interface,
+  legacy support now gets it's own special section. The commands now get
+  to be first class and all have defaults which are consistent, and legacy
+  can simply set whatever options make sense for legacy mode. Legacy is
+  currently invokved by `kdc` or `kdc-plus` with no options. In the future,
+  this will likely be changed to be *just* the `kdc` command, since that is
+  the only thing that would need legacy support.
  - CLI Transforms: `kdc-plus --transform <bin>` accepts an executable which
   can be used to pipe each file into it and read the response. Basically making
   CLI-able transforms.
@@ -8,6 +15,8 @@
   extension will not be passed to the transform. Regex is also accepted.
  - Commands: `kdc-plus` now supports three commands: compile, install, and
   outdated. For help in each, see `kdc-plus <command> -h`
+ - --bare: Added bare as an option for coffee output. This may change in the
+  near future, as it is mainly here to satisfy legacy requirements.
 
 # 0.1.1 / 2013-09-27
 

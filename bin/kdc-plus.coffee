@@ -84,7 +84,7 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
     # Add our coffee transform
     if opts.coffee
       loader.transform (file, ext) ->
-        if ext is '.coffee' then return new CoffeeTransform()
+        if ext is '.coffee' then return new CoffeeTransform bare: true
 
     if opts.transform?
       # Currently we only support a single user transform, so until we figure
@@ -117,7 +117,15 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
 
     # Now that we've declared everything, pipe our loader to our "outer",
     # which is the final destination for our stream.
-    loader.pipe outer
+
+    # First, write our closure start to the outer
+    outer.write "/* Compiled by kdc-plus v#{opts.version} */\n(function(){\n"
+
+    # On data, write it to our outer
+    loader.on 'data', (chunk) -> outer.write chunk
+
+    # And finally, when the data ends, close our app closure
+    loader.on 'end', -> outer.write "\n})()"
 
 
 

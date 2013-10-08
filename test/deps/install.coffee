@@ -62,6 +62,57 @@ describe 'installDev()', ->
 
 
 
+describe 'installProd()', ->
+  install     = null
+  installProd = null
+  opts        = null
+  before ->
+    install       = rewire '../../lib/deps/install'
+    {installProd} = install
+    opts =
+      node  : true
+      #For the future
+      #bower : true
+      #pip   : true
+      #gem   : true
+
+  describe 'with no package file', ->
+    before ->
+      install.__set__ 'installNodeProd', (ipath, opts, callback) ->
+        callback (new Error 'not found'), false, []
+
+    it 'should bail with an error', ->
+      installProd 'fake', opts, (err, packages) ->
+        should.exist err
+        err.message.should.match /not found/
+        packages.length.should.equal 0
+
+    # Commented out until multiple installers are added
+    #it 'should not call installers after the failure'
+
+  describe 'with no dependencies', ->
+    before ->
+      install.__set__ 'installNodeProd', (ipath, opts, callback) ->
+        callback null, true, []
+
+    it 'should show installed with no packages', ->
+      installProd 'fake', opts, (err, packages) ->
+        should.not.exist err
+        packages.length.should.equal 0
+
+  describe 'on success', ->
+    before ->
+      install.__set__ 'installNodeProd', (ipath, opts, callback) ->
+        callback null, true, ['some@dep']
+
+    it 'should show installed with all packages concated together', ->
+      installProd 'fake', opts, (err, packages) ->
+        should.not.exist err
+        packages.length.should.equal 1
+
+
+
+
 describe 'installNodeDev()', ->
   installNodeDev  = null
   before -> {installNodeDev} = require '../../lib/deps/install'

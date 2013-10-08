@@ -18,6 +18,8 @@ module.exports = (grunt) ->
       build: ['build']
 
     coffee:
+      options:
+        bare    : true
       all:
         expand  : true
         cwd     : './'

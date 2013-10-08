@@ -32,9 +32,10 @@ describe 'installDev()', ->
         callback (new Error 'not found'), false, []
 
     it 'should bail with an error', ->
-      installDev 'fake', opts, (err, installed, packages) ->
+      installDev 'fake', opts, (err, packages) ->
         should.exist err
         err.message.should.match /not found/
+        packages.length.should.equal 0
 
     # Commented out until multiple installers are added
     #it 'should not call installers after the failure'
@@ -45,9 +46,8 @@ describe 'installDev()', ->
         callback null, true, []
 
     it 'should show installed with no packages', ->
-      installDev 'fake', opts, (err, installed, packages) ->
+      installDev 'fake', opts, (err, packages) ->
         should.not.exist err
-        installed.should.be.true
         packages.length.should.equal 0
 
   describe 'on success', ->
@@ -56,9 +56,8 @@ describe 'installDev()', ->
         callback null, true, ['some@dep']
 
     it 'should show installed with all packages concated together', ->
-      installDev 'fake', opts, (err, installed, packages) ->
+      installDev 'fake', opts, (err, packages) ->
         should.not.exist err
-        installed.should.be.true
         packages.length.should.equal 1
 
 

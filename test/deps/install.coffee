@@ -1,14 +1,65 @@
 # 
 # # Install Deps Tests
 #
-path       = require 'path'
-fs         = require 'fs-extra'
-should     = require 'should'
+path      = require 'path'
+fs        = require 'fs-extra'
+rewire    = require 'rewire'
+should    = require 'should'
 
 
 
 
 stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
+
+
+describe 'installDev()', ->
+  install     = null
+  installDev  = null
+  opts        = null
+  before ->
+    install       = rewire '../../lib/deps/install'
+    {installDev}  = install
+    opts =
+      node  : true
+      #For the future
+      #bower : true
+      #pip   : true
+      #gem   : true
+
+  describe 'with no package file', ->
+    before ->
+      install.__set__ 'installNodeDev', (ipath, opts, callback) ->
+        callback (new Error 'not found'), false, []
+
+    it 'should bail with an error', ->
+      installDev 'fake', opts, (err, installed, packages) ->
+        should.exist err
+        err.message.should.match /not found/
+
+    # Commented out until multiple installers are added
+    #it 'should not call installers after the failure'
+
+  describe 'with no dependencies', ->
+    before ->
+      install.__set__ 'installNodeDev', (ipath, opts, callback) ->
+        callback null, true, []
+
+    it 'should show installed with no packages', ->
+      installDev 'fake', opts, (err, installed, packages) ->
+        should.not.exist err
+        installed.should.be.true
+        packages.length.should.equal 0
+
+  describe 'on success', ->
+    before ->
+      install.__set__ 'installNodeDev', (ipath, opts, callback) ->
+        callback null, true, ['some@dep']
+
+    it 'should show installed with all packages concated together', ->
+      installDev 'fake', opts, (err, installed, packages) ->
+        should.not.exist err
+        installed.should.be.true
+        packages.length.should.equal 1
 
 
 

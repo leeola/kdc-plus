@@ -274,9 +274,6 @@ install = (appPath, unknownArgs..., opts={}, log=console.error) ->
 outdated = (appPath, unknownArgs..., opts={}, log=console.error) ->
   if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
 
-  log 'Not Impelemented'
-  process.exit 1
-
   appPath ?= process.cwd()
   appPath = path.resolve appPath
 
@@ -294,17 +291,22 @@ outdated = (appPath, unknownArgs..., opts={}, log=console.error) ->
     outdaterOpts = {}
     outdaterOpts.node  = packageManagers.node
 
-    outdater appPath, outdaterOpts, (err, packages) ->
+    outdater appPath, outdaterOpts, (err, outdated, packages) ->
       if err?
         log "Error encountered during outdated: #{err.message}"
         return process.exit 1
 
       log pack for pack in packages
 
+      if outdated is false
+        log 'No defined packages our outdated!'
+        process.exit 0
 
 
 
 
+
+exports.compile   = compile
 exports.exec      = exec
 exports.install   = install
 exports.outdated  = outdated

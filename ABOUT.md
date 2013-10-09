@@ -35,6 +35,10 @@ By resolving it before compiling, we can then compile like normal and any
 files from any npm/bower/etc libraries can be included in the manifest and
 compilation like normal. No failed compilations due to missing npm modules.
 
+An example Compile-Time dependency is an NPM module that you want to bake
+into the compilation of your KDApp, such as Markdown support with
+Showdown or some similar library.
+
 ### Runtime Dependencies
 
 Runtime dependencies are a bit more complex. Because these can't be baked

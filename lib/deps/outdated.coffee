@@ -30,7 +30,7 @@ _outdated = (dir, opts={}, callback=(->), production) ->
   do iterOutdaters = ->
     outdater = outdaters.pop()
     if not outdater? then return callback null, packages.length > 0, packages
-    outdater dir, opts, (err, _packages) ->
+    outdater dir, opts, (err, outdated, _packages) ->
       packages = packages.concat _packages
       if err? then return callback err, packages.length > 0, packages
       iterOutdaters()

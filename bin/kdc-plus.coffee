@@ -12,6 +12,15 @@ path              = require 'path'
   StdioTransform
 }                 = require '../lib/streams/load'
 maniutils         = require '../lib/maniutils'
+{
+  installDev
+  installProd
+}                 = require '../lib/deps/install'
+
+{
+  outdatedDev
+  outdatedProd
+}                 = require '../lib/deps/outdated'
 
 
 
@@ -221,13 +230,40 @@ exec = (argv, log=console.error) ->
 # corrisponding dependency files *(package.json, bower.json, etc)*.
 install = (appPath, unknownArgs..., opts={}, log=console.error) ->
   if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
-  log 'Not Implemented'
-  return process.exit 1
 
   appPath ?= process.cwd()
   appPath = path.resolve appPath
 
   _loadManifest appPath, (manifest) ->
+    # Get a the package managers that we should tell to install from the
+    # manifest. For an examplanation as to why we use this method of
+    # identifying which packages to install, see <INSERT LINK HERE..>
+    if opts.production is true
+      packageManagers = manifest.packageManagers    ? {}
+      installer       = installProd
+    else
+      packageManagers = manifest.devPackageManagers ? {}
+      installer       = installDev
+
+    # To avoid unintended behavior, we'll copy just the packages we support,
+    # to ensure accidental "install options" don't leak in from the manifest
+    installOpts = {}
+    installOpts.node  = packageManagers.node
+
+    installer appPath, installOpts, (err, packages) ->
+      if err?
+        log "Error encountered during install: #{err.message}"
+        return process.exit 1
+
+      log pack for pack in packages
+
+      log 'Install completed successfully!'
+      process.exit 0
+
+
+
+    
+
     
 
 
@@ -237,14 +273,33 @@ install = (appPath, unknownArgs..., opts={}, log=console.error) ->
 # also the corrisponding dependency files *(package.json, bower.json, etc)*.
 outdated = (appPath, unknownArgs..., opts={}, log=console.error) ->
   if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
-  log 'Not Implemented'
-  return process.exit 1
+
+  log 'Not Impelemented'
+  process.exit 1
 
   appPath ?= process.cwd()
   appPath = path.resolve appPath
 
   _loadManifest appPath, (manifest) ->
-    
+    # Get a the package managers that we should tell to install from the
+    # manifest. For an examplanation as to why we use this method of
+    # identifying which packages to install, see <INSERT LINK HERE..>
+    if opts.production is true
+      packageManagers = manifest.packageManagers    ? {}
+      outdater        = outdatedProd
+    else
+      packageManagers = manifest.devPackageManagers ? {}
+      outdater        = outdatedDev
+
+    outdaterOpts = {}
+    outdaterOpts.node  = packageManagers.node
+
+    outdater appPath, outdaterOpts, (err, packages) ->
+      if err?
+        log "Error encountered during outdated: #{err.message}"
+        return process.exit 1
+
+      log pack for pack in packages
 
 
 

@@ -36,7 +36,7 @@ VERSION = '@@version'
 # Since many of the commands load the manifest, and have to deal with
 # failures/etc in the same manner, this is a little convenience function
 # which handles the grunt work and returns the manifest.
-_loadManifest = (appPath, callback) ->
+_loadManifest = (appPath, log, callback) ->
   loadOpts =
     validate: true
 
@@ -63,7 +63,7 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
   appPath ?= process.cwd()
   appPath = path.resolve appPath
 
-  _loadManifest appPath, (manifest) ->
+  _loadManifest appPath, log, (manifest) ->
     # ## CLI & Manifest Defaults
     # Now that we have a manifest loaded, assign our defaults, letting the
     # CLI opts override everything.
@@ -212,6 +212,12 @@ exec = (argv, log=console.error) ->
   # And finally, parse the args
   program.parse argv
 
+  validArgs = [
+    'command'
+    'install'
+    'outdated'
+  ]
+
   # If there are no args, run compile with legacy kdc args
   # Note: We're using `rawArgs` instead of `args` due to inconsistent
   # behavior with args with the following two commands:
@@ -219,8 +225,15 @@ exec = (argv, log=console.error) ->
   #   kdc-plus outdated --production ./
   # `args.length == 2` for the first command, `args.length == 0` for the
   # second command.. which seems odd. So, i am using rawArgs instead.
-  if program.rawArgs.length == 2
+  # I really don't like this whole following section of code, really want to
+  # find a way to handle this neatly
+  if program.rawArgs.length is 2
+    # If `kdc-plus` was called with no args, compile
     compile process.cwd(), [], coffee: true, bare: true, log
+  else if (program.rawArgs.length is 3 and
+      validArgs.indexOf(program.rawArgs[2]) < 0)
+    # If `kdc-plus unknown-arg` was called, assume it is a directory, compile
+    compile program.rawArgs[2], [], coffee: true, bare: true, log
 
 
 
@@ -234,7 +247,7 @@ install = (appPath, unknownArgs..., opts={}, log=console.error) ->
   appPath ?= process.cwd()
   appPath = path.resolve appPath
 
-  _loadManifest appPath, (manifest) ->
+  _loadManifest appPath, log, (manifest) ->
     # Get a the package managers that we should tell to install from the
     # manifest. For an examplanation as to why we use this method of
     # identifying which packages to install, see <INSERT LINK HERE..>
@@ -277,7 +290,7 @@ outdated = (appPath, unknownArgs..., opts={}, log=console.error) ->
   appPath ?= process.cwd()
   appPath = path.resolve appPath
 
-  _loadManifest appPath, (manifest) ->
+  _loadManifest appPath, log, (manifest) ->
     # Get a the package managers that we should tell to install from the
     # manifest. For an examplanation as to why we use this method of
     # identifying which packages to install, see <INSERT LINK HERE..>

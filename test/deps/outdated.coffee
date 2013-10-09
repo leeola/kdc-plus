@@ -1,8 +1,9 @@
 # 
 # # Check Deps Tests
 #
-path          = require 'path'
-should        = require 'should'
+path      = require 'path'
+rewire    = require 'rewire'
+should    = require 'should'
 
 
 
@@ -11,9 +12,32 @@ stubsdir  = path.join process.cwd(), 'build', 'test', 'stubs'
 
 
 
-describe 'outdatedDev()', ->
+# Note that the _outdated tests are a bit lacking due to there only
+# being a single package manager currently supported. We'll need
+# to outdate these once more PMs come into play.
+describe '_outdated()', ->
+  outdated  = null
+  _outdated = null
+  opts      = null
+  before ->
+    outdated     = rewire '../../lib/deps/outdated'
+    {_outdated} = outdated
+    opts =
+      node  : true
+      #For the future
+      #bower : true
+      #pip   : true
+      #gem   : true
 
-describe 'outdatedProd()', ->
+  it 'should concat the packages', ->
+    outdated.__set__ 'outdatedNodeDev', (ipath, opts, callback) ->
+      callback null, true, ['some@package']
+    callback = (err, outdated, packages) ->
+      should.not.exist err
+      outdated.should.equal.true
+      packages.length.should.equal 1
+    _outdated 'fake', opts, callback, false
+
 
 describe 'outdatedNodeDev()', ->
   outdatedNodeDev  = null

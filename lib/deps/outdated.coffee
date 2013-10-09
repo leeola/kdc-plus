@@ -10,38 +10,36 @@ autoTransport   = require '../transports/auto'
 
 
 
-check = (opts, callback=->) ->
-  if opts instanceof Function
-    callback = opts
-    opts={}
-  
-  # Define our default options
-  opts.devDeps     ?= true
-  opts.prodDeps    ?= true
 
-  checkFns        = [
-    [checkNode, 'node']
-  ]
-  result = false
-  results = {}
+# ## Private: Outdated
+_outdated = (dir, opts={}, callback=(->), production) ->
+  if opts instanceof Function then [callback, opts] = [opts, {}]
+  opts.node ?= false
 
-  do next = (index=0) ->
-    if index >= checkFns.length then return callback null, result, results
+  # Next, get a list of all outdated functions we are going to call
+  outdaters = []
+  if production
+    outdaters.push outdatedNodeProd if opts.node is true
+  else
+    outdaters.push outdatedNodeDev  if opts.node is true
 
-    [checkFn, checkName] = checkFns[index]
+  # Our list of outdated functions from all outdaters
+  packages = []
 
-    # If the check() caller didnt specify this type, go next()
-    if opts[checkName] isnt true then return next ++index
+  # and immediately iterate our outdated functions
+  do iterOutdaters = ->
+    outdater = outdaters.pop()
+    if not outdater? then return callback null, packages.length > 0, packages
+    outdater dir, opts, (err, _packages) ->
+      packages = packages.concat _packages
+      if err? then return callback err, packages.length > 0, packages
+      iterOutdaters()
 
-    checkFn opts, (err, _result, items) ->
-      if err? then return callback err
 
-      if _result then result = _result
-      results[type] =
-        result: result
-        items : items
 
-      next ++index
+# ## Public Outdated Functions
+outdatedDev   = (d, o, c) -> _outdated d, o, c, false
+outdatedProd  = (d, o, c) -> _outdated d, o, c, true
 
 
 
@@ -130,5 +128,8 @@ outdatedNodeProd = (dir, opts={}, callback=->) ->
 
 
 exports._npmErrCodeHumanizer  = _npmErrCodeHumanizer
+exports._outdated             = _outdated
+exports.outdatedDev           = outdatedDev
+exports.outdatedProd          = outdatedProd
 exports.outdatedNodeDev       = outdatedNodeDev
 exports.outdatedNodeProd      = outdatedNodeProd

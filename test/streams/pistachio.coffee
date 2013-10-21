@@ -10,7 +10,7 @@ should        = require 'should'
 
 describe 'PistachioThis()', ->
   PistachioThis = null
-  before -> {PistachioThis}   = require '../../lib/stream/pistachio'
+  before -> {PistachioThis}   = require '../../lib/streams/pistachio'
 
 
   it 'should not modify the data if there is no match', (done) ->

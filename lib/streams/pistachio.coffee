@@ -28,6 +28,20 @@ pistachio_matcher = /\{(\w*)?(\#\w*)?((?:\.\w*)*)(\[(?:\b\w*\b)(?:\=[\"|\']?.*[\
 class PistachioThis extends Transform
   constructor: ->
     super()
+    @_data = ''
+
+  _transform: (chunk, enc, next) ->
+    @_data += chunk
+    next()
+
+  # We wait for flush to be called to implicitly know the end of the incoming,
+  # and then apply the replace.
+  _flush: ->
+    @_data.replace pistachio_matcher, (pist) -> pist.replace /\@/g, 'this.'
+    # Now that we have replaced what we expect, push out our data
+    @push @_data
+    # And then null to end the stream
+    @push null
 
 
 

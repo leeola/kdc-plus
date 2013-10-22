@@ -37,9 +37,9 @@ class PistachioThis extends Transform
   # We wait for flush to be called to implicitly know the end of the incoming,
   # and then apply the replace.
   _flush: ->
-    @_data.replace pistachio_matcher, (pist) -> pist.replace /\@/g, 'this.'
-    # Now that we have replaced what we expect, push out our data
-    @push @_data
+    # Push the output of our pistachio replace
+    @push @_data.replace pistachio_matcher, (pist) ->
+      pist.replace /\@/g, 'this.'
     # And then null to end the stream
     @push null
 

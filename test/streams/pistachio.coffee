@@ -32,10 +32,10 @@ describe 'PistachioThis()', ->
     s = new PistachioThis()
     s.on 'data', (chunk) -> d += chunk
     s.on 'end', ->
-      d.should.equal source_data
+      d.should.equal 'my {{> this.foo}} string'
       done()
     # By looping through the source data we ensure that our stream is
     # buffering properly
-    s.write chunk for chunk in source_data
+    s.write chunk for chunk in source_data.split('')
     s.end()
 

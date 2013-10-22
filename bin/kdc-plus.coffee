@@ -181,6 +181,7 @@ exec = (argv, log=console.error) ->
     'for the previous transform'
   compileCmd.option '-p, --pipe', 'Pipe to STDOUT instead of to a file'
   compileCmd.option '-f, --file <file>', 'Choose the output file'
+  compileCmd.option '--pistachiothis', 'Convert @ to this in your pistachio'
   compileCmd.action -> compile arguments..., log
 
 
@@ -212,12 +213,21 @@ exec = (argv, log=console.error) ->
   # And finally, parse the args
   program.parse argv
 
+  # See below defaults
   validArgs = [
     'command'
     'install'
     'outdated'
   ]
 
+  # Our legacy options, used for the legacy calls below
+  legacyOptions =
+    coffee        : true
+    bare          : true
+    pistachiothis : true
+
+  # ### No Options Default, Legacy
+  #
   # If there are no args, run compile with legacy kdc args
   # Note: We're using `rawArgs` instead of `args` due to inconsistent
   # behavior with args with the following two commands:
@@ -229,11 +239,11 @@ exec = (argv, log=console.error) ->
   # find a way to handle this neatly
   if program.rawArgs.length is 2
     # If `kdc-plus` was called with no args, compile
-    compile process.cwd(), [], coffee: true, bare: true, log
+    compile process.cwd(), [], legacyOptions, log
   else if (program.rawArgs.length is 3 and
       validArgs.indexOf(program.rawArgs[2]) < 0)
     # If `kdc-plus unknown-arg` was called, assume it is a directory, compile
-    compile program.rawArgs[2], [], coffee: true, bare: true, log
+    compile program.rawArgs[2], [], legacyOptions, log
 
 
 

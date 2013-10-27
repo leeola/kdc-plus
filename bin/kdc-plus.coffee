@@ -12,6 +12,7 @@ path              = require 'path'
   StdioTransform
 }                 = require '../lib/streams/load'
 maniutils         = require '../lib/maniutils'
+{PistachioThis}   = require '../lib/streams/pistachio'
 {
   installDev
   installProd
@@ -115,6 +116,9 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
       loader.transform (file, ext) ->
         if ext is '.coffee' then return new CoffeeTransform bare: opts.bare
 
+    if opts.pistachioThis
+      loader.transform -> new PistachioThis()
+
     if opts.transform?
       # Currently we only support a single user transform, so until we figure
       # out the transform cli syntax, lets pretend it was multiple results so
@@ -181,7 +185,7 @@ exec = (argv, log=console.error) ->
     'for the previous transform'
   compileCmd.option '-p, --pipe', 'Pipe to STDOUT instead of to a file'
   compileCmd.option '-f, --file <file>', 'Choose the output file'
-  compileCmd.option '--pistachiothis', 'Convert @ to this in your pistachio'
+  compileCmd.option '--pistachio-this', 'Convert @ to this in your pistachio'
   compileCmd.action -> compile arguments..., log
 
 
@@ -224,7 +228,7 @@ exec = (argv, log=console.error) ->
   legacyOptions =
     coffee        : true
     bare          : true
-    pistachiothis : true
+    pistachioThis : true
 
   # ### No Options Default, Legacy
   #

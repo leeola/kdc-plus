@@ -2,8 +2,7 @@
 # Utility Stream Tests
 #
 {
-  Readable
-  Writeable
+  PassThrough
 }             = require 'stream'
 should        = require 'should'
 
@@ -15,22 +14,22 @@ describe 'ReadPiper()', ->
   before -> {ReadPiper} = require '../../lib/streams/utils'
 
   it 'should preserve data order', (done) ->
-    source  = new Readable()
-    source1 = new Readable()
-    source2 = new Readable()
+    source  = new PassThrough()
+    source1 = new PassThrough()
+    source2 = new PassThrough()
 
     piper1  = new ReadPiper source1
     piper2  = new ReadPiper source2
 
-    dest    = new Writeable()
+    dest    = new PassThrough()
 
     # now that we have all of our streams created, hook them up
     source.pipe(piper1).pipe(piper2).pipe(dest)
 
     # Write to our source streams *out of order*
-    source1.write 'b'
-    source2.write 'c'
-    source.write  'a'
+    source1.end 'b'
+    source2.end 'c'
+    source.end  'a'
 
     # And finally watch our writeable for data
     d = ''

@@ -27,14 +27,21 @@ describe 'ReadPiper()', ->
     source.pipe(piper1).pipe(piper2).pipe(dest)
 
     # Write to our source streams *out of order*
-    source1.end 'b'
-    source2.end 'c'
-    source.end  'a'
+    source1.write 'c'
+    source.write  'a'
+    source2.write 'e'
+    source1.write 'd'
+    source.write  'b'
+    source2.write 'f'
+
+    source.end()
+    source1.end()
+    source2.end()
 
     # And finally watch our writeable for data
     d = ''
     dest.on 'data', (chunk) -> d += chunk
     dest.on 'end',  ->
-      d.should.equal 'abc'
+      d.should.equal 'abcdef'
       done()
 

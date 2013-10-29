@@ -243,6 +243,7 @@ exec = (argv, log=console.error) ->
   # Our legacy options, used for the legacy calls below
   legacyOptions =
     coffee        : true
+    commonjs      : false
     bare          : true
     pistachioThis : true
 

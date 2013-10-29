@@ -1,4 +1,4 @@
-# 0.2.0 /
+# 0.2.0 / 2013-10-29
 
  - Legacy Support: With the heavy changes to the command line interface,
   legacy support now gets it's own special section. The commands now get

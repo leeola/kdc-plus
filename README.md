@@ -44,7 +44,7 @@ see each of the following topics to explain the properties.
     },
     "devPackageManagers": {
       "node": false
-    }
+    },
     "file_opts": {
       "./path/to/file.js": {
         "coffee": true,

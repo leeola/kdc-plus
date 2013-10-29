@@ -282,10 +282,10 @@ install = (appPath, unknownArgs..., opts={}, log=console.error) ->
     # manifest. For an examplanation as to why we use this method of
     # identifying which packages to install, see <INSERT LINK HERE..>
     if opts.production is true
-      packageManagers = manifest.packageManagers    ? {}
+      packageManagers = manifest.plus.packageManagers    ? {}
       installer       = installProd
     else
-      packageManagers = manifest.devPackageManagers ? {}
+      packageManagers = manifest.plus.devPackageManagers ? {}
       installer       = installDev
 
     # To avoid unintended behavior, we'll copy just the packages we support,
@@ -325,10 +325,10 @@ outdated = (appPath, unknownArgs..., opts={}, log=console.error) ->
     # manifest. For an examplanation as to why we use this method of
     # identifying which packages to install, see <INSERT LINK HERE..>
     if opts.production is true
-      packageManagers = manifest.packageManagers    ? {}
+      packageManagers = manifest.plus.packageManagers    ? {}
       outdater        = outdatedProd
     else
-      packageManagers = manifest.devPackageManagers ? {}
+      packageManagers = manifest.plus.devPackageManagers ? {}
       outdater        = outdatedDev
 
     outdaterOpts = {}

@@ -235,7 +235,7 @@ exec = (argv, log=console.error) ->
 
   # See below defaults
   validArgs = [
-    'command'
+    'compile'
     'install'
     'outdated'
   ]

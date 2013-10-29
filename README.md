@@ -123,6 +123,13 @@ complex, you can specify a regex string to use instead of the simple file
 extension. Positive matches will be transformed, everything else is ignored
 from this transform.
 
+## Legacy Support
+
+As `kdc -h` mentions, the kdc-plus bin currently comes with "legacy support".
+The purpose of this being to ensure calls to `kdc` behave the same as they do
+for the official kdc compiler. As i mentioned above, we'll be moving this to
+a `kdc-plus-legacy` project soon.
+
 ## I still don't get it
 
 If you're looking for additional explanation of what this project is, why it

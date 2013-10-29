@@ -10,6 +10,12 @@
 
 
 
+# ## ReadPiper
+#
+# The read piper is a little utility class to allow a readstream to be
+# "piped into". Technically the read stream given to this class never gets
+# piped into, but this class simply allows the usage. So, if you have a 
+# read stream, give it to this class, and now you can pipe streams together.
 class ReadPiper extends Duplex
   constructor: (@_readStream, @name) ->
     super()

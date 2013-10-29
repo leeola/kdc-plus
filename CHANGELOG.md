@@ -17,6 +17,13 @@
   outdated. For help in each, see `kdc-plus <command> -h`
  - --bare: Added bare as an option for coffee output. This may change in the
   near future, as it is mainly here to satisfy legacy requirements.
+ - Manifest Option Change. Manifest options are now defined under the "plus"
+  as an object. This is due to the growing number of options, and not wanting
+  to cause any unknown overlaps in meaning or context.
+ - File Specific Options. File options can now override default manifest and
+  cli options. The reason that they ovrride cli options is because cli options,
+  like manifest options, are "global". File specific options imply a higher
+  order of importance, and thusly should be more important. 
 
 # 0.1.1 / 2013-09-27
 

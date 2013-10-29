@@ -13,6 +13,7 @@ path              = require 'path'
 }                 = require '../lib/streams/load'
 maniutils         = require '../lib/maniutils'
 {PistachioThis}   = require '../lib/streams/pistachio'
+{ReadPiper}       = require '../lib/streams/utils'
 {
   installDev
   installProd
@@ -55,11 +56,31 @@ _loadManifest = (appPath, log, callback) ->
 
 
 
+# ## Opt Finder
+#
+# Since our options cascade from File -> CLI -> General -> Default
+# we have a function for handling this rather large and specific type of code
+_fopt_finder = (file, manifest, copts) ->
+  popts = manifest.plus
+  fopts = manifest.plus.files?[file] ? {}
+
+  defaultOpt = (optName, optDef) ->
+    fopts[optName] ? copts[optName] ? popts[optName] ? optDef
+
+  bare          : defaultOpt 'bare', false
+  coffee        : defaultOpt 'coffee', false
+  commonjs      : defaultOpt 'commonjs', false
+  pistachioThis : defaultOpt 'pistachioThis', false
+
+
+
+
+
 # ## Compile
 #
 # The function called when `kdc-plus compile` is used.
-compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
-  if typeof appPath is 'object' then [opts, appPath] = [appPath, undefined]
+compile = (appPath, unknownArgs..., copts={}, log=console.error) ->
+  if typeof appPath is 'object' then [copts, appPath] = [appPath, undefined]
 
   appPath ?= process.cwd()
   appPath = path.resolve appPath
@@ -70,86 +91,81 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
     # CLI opts override everything.
 
     # If they declared pipe and file, warn that file is ignored.
-    if opts.file? and opts.pipe
+    if copts.file? and copts.pipe
       log 'Warning: --pipe and --file are both defined, file will be ignored.'
 
     # Since pipe desn't make sense as a manifest option, lets warn it.
     if manifest.pipe is true
       log 'Warning: "pipe" is not supported in the manifest'
 
-    opts.bare ?= false
+    copts.file = copts.file ? manifest.file ? 'index.js'
 
-    if opts.file? or manifest.file?
-      opts.file = opts.file ? manifest.file
-    else
-      opts.file = 'index.js'
-
-    if opts.commonjs? or manifest.commonjs?
-      opts.commonjs = opts.commonjs ? manifest.commonjs
-    else
-      opts.commonjs = false
-
-    if opts.coffee? or manifest.coffee?
-      opts.coffee = opts.coffee ? manifest.coffee
-    else
-      opts.coffee = false
-
+    compileStream = null
     # Take all of our files and make them relative to our appPath if
     # they are relative.
     files = manifest.source.blocks.app.files
-    for file,i in files
-      # Skip this file if it's an /absolute/path
-      if file[0] is path.sep then continue
-      files[i] = path.resolve path.join appPath, file
+    for file in files then do ->
+      # Get the file opts, and make sure to do it before we resolve the file
+      # path
+      fopts = _fopt_finder file, manifest, copts
+      file  = path.resolve path.join appPath, file if file[0] isnt path.sep
 
-    # Our cjs is a multi-file loader, so allow it to load if the caller wants
-    # cjs, otherwise use our default loader
-    if opts.commonjs
-      cjsopts = extensions: []
-      cjsopts.extensions.push '.coffee' if opts.coffee
-      loader    = new Commonjs files, cjsopts
-    else
-      loader    = new LoadMulti files
+      if fopts.commonjs
+        cjsopts = extensions: []
+        cjsopts.extensions.push '.coffee' if fopts.coffee
+        loader    = new Commonjs [file], cjsopts
+      else
+        loader    = new LoadMulti [file]
 
-    # Add our coffee transform
-    if opts.coffee
-      loader.transform (file, ext) ->
-        if ext is '.coffee' then return new CoffeeTransform bare: opts.bare
+      # Add our coffee transform
+      if fopts.coffee
+        loader.transform (file, ext) ->
+          if ext is '.coffee' then return new CoffeeTransform bare: fopts.bare
 
-    if opts.pistachioThis
-      loader.transform -> new PistachioThis()
+      if fopts.pistachioThis
+        loader.transform -> new PistachioThis()
 
-    if opts.transform?
-      # Currently we only support a single user transform, so until we figure
-      # out the transform cli syntax, lets pretend it was multiple results so
-      # that we can later easily support multiple transforms.
-      opts.transform  = [opts.transform]
-      opts.transExt   = [opts.transExt]
-      for transform, i in opts.transform
-        transExt = opts.transExt[i]
-        loader.transform StdioTransform.Filter transform, transExt
+      # note that use of copts, *not fopts*. This is because it is purely a
+      # command line option, but we still need to add the transforms here.
+      if copts.transform?
+        # Currently we only support a single user transform, so until we figure
+        # out the transform cli syntax, lets pretend it was multiple results so
+        # that we can later easily support multiple transforms.
+        transforms  = [copts.transform]
+        transExts   = [copts.transExt]
+        for transform, i in transforms
+          transExt = transExts[i]
+          loader.transform StdioTransform.Filter transform, transExt
+
+      # Now that we have added our transforms to our loader, wrap it in a
+      # ReadPiper so that we can pipe consectutive streams together.. 
+      # Essentially concat the streams
+      if compileStream?
+        compileStream = compileStream.pipe new ReadPiper loader
+      else
+        compileStream = loader
 
     # Now we finally pipe the output out of our program. We either pipe it to
     # a file, or STDOUT (if defined)
-    if opts.pipe
+    if copts.pipe
       outer   = process.stdout
 
       # For pipe, there is nothing we need to end. So when our loader is done,
       # make sure to add our closure-close, and log success
-      loader.on 'end', ->
+      compileStream.on 'end', ->
         outer.write "\n})();"
         log "KDApp Compiled Successfully!"
     else
-      outer   = fs.createWriteStream path.join appPath, opts.file
+      outer   = fs.createWriteStream path.join appPath, copts.file
 
       # When our loader is done, close our closure and end the file stream
-      loader.on 'end', -> outer.end "\n})();"
+      compileStream.on 'end', -> outer.end "\n})();"
       # We wait till the file stream ends fully to ensure we don't prematurely
       # call success if an error occurs.. it just looks bad when you do that.
       outer.on 'finish', ->
         log "KDApp Compiled Successfully!"
 
-    loader.on 'error', (err) ->
+    compileStream.on 'error', (err) ->
       log "Error Compiling KDApp: #{err.message}"
       process.exit 1
 
@@ -161,7 +177,7 @@ compile = (appPath, unknownArgs..., opts={}, log=console.error) ->
     outer.write "/* Compiled by kdc-plus v#{VERSION} */\n(function(){\n"
 
     # On data, write it to our outer
-    loader.on 'data', (chunk) -> outer.write chunk
+    compileStream.on 'data', (chunk) -> outer.write chunk
 
 
 

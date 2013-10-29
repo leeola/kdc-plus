@@ -33,6 +33,11 @@ load = (appPath, opts={}, callback=->) ->
 
     validate data, (err, failures, warnings) ->
       if err? then return callback "Validation Error: #{err.message}"
+
+      # I'm not sure how i want to handle this, but for the time being lets
+      # assign a default plus object to ensure our namespace always exists.
+      data.plus ?= {}
+
       callback null, data, failures, warnings
 
 

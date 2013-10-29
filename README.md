@@ -36,16 +36,29 @@ see each of the following topics to explain the properties.
 
 ```
 {
-  "coffee": false,
-  "commonjs": false,
-  "packageManagers": {
-    "node": false
-  },
-  "devPackageManagers": {
-    "node": false
+  "plus": {
+    "coffee": false,
+    "commonjs": false,
+    "packageManagers": {
+      "node": false
+    },
+    "devPackageManagers": {
+      "node": false
+    }
+    "file_opts": {
+      "./path/to/file.js": {
+        "coffee": true,
+        "commonjs": true
+      }
+    }
   }
 }
 ```
+
+### Plus
+
+`plus` is the namespace being used to store kdc-plus variables. This namespace
+helps avoid conflict with any taken key names in the official namespace.
 
 ### Commonjs
 
@@ -62,6 +75,16 @@ Coffee support is at it sounds, support for Coffee files.
 `kdc-plus install` and `kdc-plus outdated` will use the package managers
 declared in this object to install *(or outdated check)* the requirements for
 this KDApp.
+
+### file_opts
+
+The `file_opts` key specifies an object where the key is the **exact** file
+path specified in the `source.blocks.app.files` list. If a match is found,
+the options specified here will override all other file options passed in
+from the CLI or in the general file options.
+
+Remember that this is an exact key match only. If it is off by even a single
+character, the options will not be applied to the given file.
 
 # Koding Compiler Plus, The Reckoning
 

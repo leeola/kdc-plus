@@ -34,7 +34,7 @@ and overriding manifest options.
 Below is an example of the additions we are currently adding to the manifest,
 see each of the following topics to explain the properties.
 
-```
+```json
 {
   "plus": {
     "coffee": false,
@@ -55,18 +55,18 @@ see each of the following topics to explain the properties.
 }
 ```
 
-### Plus
+### plus
 
 `plus` is the namespace being used to store kdc-plus variables. This namespace
 helps avoid conflict with any taken key names in the official namespace.
 
-### Commonjs
+### commonjs
 
 If `commonjs` is `false`, we simply concat the compiled CoffeeScript files
 *(or normal JavaScript)* into a single file. If it is `true`, then we use
 Browserify v2 to implement the standard commonjs require system.
 
-### Coffee
+### coffee
 
 Coffee support is at it sounds, support for Coffee files.
 
